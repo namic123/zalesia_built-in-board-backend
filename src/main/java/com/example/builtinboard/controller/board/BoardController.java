@@ -14,8 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class BoardController {
     private final BoardService boardService;
     @PostMapping("create")
-    public ResponseEntity create(Board board){
-            boardService.create(board);
-            return ResponseEntity.ok().build();
+    public void create(Board board){
+        System.out.println(board);
+//            boardService.create(board);
+//            return ResponseEntity.ok().build();
     }
 }
