@@ -9,9 +9,13 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class BoardService {
     private final BoardRepository boardRepository;
-    // 게시글 생성
-    public void create(Board board){
-        boardRepository.save(board);
 
+    // 게시글 생성
+    public boolean create(Board board) {
+        if (boardRepository.save(board) != null) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
