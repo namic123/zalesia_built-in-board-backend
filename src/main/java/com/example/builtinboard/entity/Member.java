@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
+@Table(name = "member")
 public class Member {
     @Id
     // PK생성 전략: 엔티티의 기본키 필드값이 어떻게 생성될지 정의
@@ -14,21 +15,21 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "MEMBER_ID",nullable = false, length = 50)
+    @Column(name = "member_id",nullable = false, length = 50)
     private String memberId;
 
-    @Column(name="PASSWORD", nullable = false, length = 255)
+    @Column(name="password", nullable = false, length = 255)
     private String password;
 
-    @Column(name = "NICKNAME", nullable = false, unique = true, length = 50)
+    @Column(name = "nickname", nullable = false, unique = true, length = 50)
     private String nickname;
 
-    @Column(name = "EMAIL", nullable = false, unique = true, length = 355)
+    @Column(name = "email", nullable = false, unique = true, length = 355)
     private String email;
 
-    @Column(name = "SIGNUP_DATE", nullable = false)
+    @Column(name = "signup_date", nullable = false)
     private LocalDateTime signUpDate;
 }
