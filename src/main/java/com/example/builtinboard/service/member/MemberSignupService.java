@@ -16,4 +16,14 @@ public class MemberSignupService {
 
         return false;
     }
+
+    public boolean getMemberId(String memberId) {
+        memberRepository.findByMemberId(memberId);
+        return false;
+    }
+
+    public boolean getEmail(String email) {
+        memberRepository.findByEmail(email);
+        return false;
+    }
 }

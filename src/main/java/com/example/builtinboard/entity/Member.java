@@ -18,7 +18,7 @@ public class Member {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "member_id",nullable = false)
+    @Column(name = "memberId",nullable = false)
     private String memberId;
 
     @Column(name="password", nullable = false)
@@ -30,6 +30,6 @@ public class Member {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "signup_date", nullable = false)
-    private LocalDateTime signUpDate;
+    @Column(name = "signupDate", nullable = false)
+    private LocalDateTime signupDate;
 }
