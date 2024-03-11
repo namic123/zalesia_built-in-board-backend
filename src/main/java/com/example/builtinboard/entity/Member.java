@@ -15,19 +15,19 @@ public class Member {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false, length = 50)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "member_id",nullable = false, length = 50)
+    @Column(name = "member_id",nullable = false)
     private String memberId;
 
-    @Column(name="password", nullable = false, length = 255)
+    @Column(name="password", nullable = false)
     private String password;
 
-    @Column(name = "nickname", nullable = false, unique = true, length = 50)
+    @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
-    @Column(name = "email", nullable = false, unique = true, length = 355)
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "signup_date", nullable = false)

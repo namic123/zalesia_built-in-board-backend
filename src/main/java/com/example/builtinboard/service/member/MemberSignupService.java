@@ -12,7 +12,7 @@ public class MemberSignupService {
     private final MemberRepository memberRepository;
 
     public boolean getNickname(String nickname){
-        System.out.println("nickname = " + memberRepository.findAll());
+        System.out.println("조회 결과 " + memberRepository.findAll());
 
         return false;
     }

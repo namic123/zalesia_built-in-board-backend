@@ -21,7 +21,7 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
 
     @Bean
@@ -32,7 +32,7 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement)->
                         sessionManagement.sessionCreationPolicy(STATELESS))
                 .authorizeHttpRequests((authorizeHttpRequests)->
-                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/*")).permitAll());
+                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
         return httpSecurity.build();
     }
 
