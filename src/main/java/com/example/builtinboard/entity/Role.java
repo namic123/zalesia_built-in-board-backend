@@ -10,5 +10,4 @@ public enum Role {
     private String value;
     Role(String value){
         this.value = value;
-
     }}

@@ -19,10 +19,10 @@ public class Member {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "memberId",nullable = false)
+    @Column(name = "memberId", nullable = false)
     private String memberId;
 
-    @Column(name="password", nullable = false)
+    @Column(name = "password", nullable = false)
     private String password;
 
     @Column(name = "nickname", nullable = false, unique = true)
@@ -33,4 +33,7 @@ public class Member {
 
     @Column(name = "signupDate", nullable = false)
     private LocalDateTime signupDate;
+
+    @Column(name = "role")
+    private Role role;
 }
