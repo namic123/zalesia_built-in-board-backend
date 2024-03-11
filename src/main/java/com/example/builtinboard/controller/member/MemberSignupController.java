@@ -14,7 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
-public class MemberController {
+public class MemberSignupController {
 
     private final MemberSignupService memberSignupService;
 

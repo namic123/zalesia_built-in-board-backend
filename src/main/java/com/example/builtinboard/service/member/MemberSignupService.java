@@ -12,18 +12,30 @@ public class MemberSignupService {
     private final MemberRepository memberRepository;
 
     public boolean getNickname(String nickname){
-        System.out.println("조회 결과 " + memberRepository.findAll());
+        // 닉네임이 존재할 경우
+        if(memberRepository.findByNickname(nickname).isPresent()){
 
+            return true;
+        }
+        // 존재하지 않을 경우
         return false;
     }
 
     public boolean getMemberId(String memberId) {
-        memberRepository.findByMemberId(memberId);
+        // 아이디가 존재할 경우
+        if(memberRepository.findByMemberId(memberId).isPresent()){
+            return true;
+        }
+        // 존재하지 않을 경우
         return false;
     }
 
     public boolean getEmail(String email) {
-        memberRepository.findByEmail(email);
+        // 이메일이 존재할 경우
+        if(memberRepository.findByEmail(email).isPresent()){
+            return true;
+        }
+        // 존재하지 않는 경우
         return false;
     }
 }

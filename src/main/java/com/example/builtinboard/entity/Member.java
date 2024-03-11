@@ -13,6 +13,7 @@ public class Member {
     // PK생성 전략: 엔티티의 기본키 필드값이 어떻게 생성될지 정의
     // 아래 전략은 자동 증가 기능(auto_increment)을 이용
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @Column(name = "name", nullable = false)
