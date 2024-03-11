@@ -1,13 +1,13 @@
 package com.example.builtinboard.controller.member;
 
+import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.service.member.MemberSignupService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -51,10 +51,10 @@ public class MemberSignupController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-    @GetMapping(value = "/check", params = "id")
-    public ResponseEntity<HttpStatus> checkId(@RequestParam Optional<String> id){
-        if(id.isPresent()){
-            if(memberSignupService.getMemberId(id.get())){
+    @GetMapping(value = "/check", params = "memberId")
+    public ResponseEntity<HttpStatus> checkId(@RequestParam Optional<String> memberId){
+        if(memberId.isPresent()){
+            if(memberSignupService.getMemberId(memberId.get())){
                 // 409 에러: 리소스 충돌
                 return ResponseEntity.status(HttpStatus.CONFLICT).build();
             } else {
@@ -64,6 +64,19 @@ public class MemberSignupController {
         } else {
             // null인 경우, 400 에러
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody Member member,
+                                                   BindingResult bindingResult){
+        if(bindingResult.hasErrors()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        if(memberSignupService.createMember(member)){
+            return ResponseEntity.status(HttpStatus.OK).build();
+        }else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

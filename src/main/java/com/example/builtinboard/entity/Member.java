@@ -31,9 +31,15 @@ public class Member {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "signupDate", nullable = false)
+    @Column(name = "signup_date", nullable = false)
     private LocalDateTime signupDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
+
+    @PrePersist
+    public void prePersist() {
+        this.signupDate = LocalDateTime.now();
+    }
 }

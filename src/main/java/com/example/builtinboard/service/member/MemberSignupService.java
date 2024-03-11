@@ -1,7 +1,10 @@
 package com.example.builtinboard.service.member;
 
+import com.example.builtinboard.entity.Member;
+import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class MemberSignupService {
     private final MemberRepository memberRepository;
-
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     public boolean getNickname(String nickname){
         // 닉네임이 존재할 경우
         if(memberRepository.findByNickname(nickname).isPresent()){
@@ -37,5 +40,15 @@ public class MemberSignupService {
         }
         // 존재하지 않는 경우
         return false;
+    }
+
+    public boolean createMember(Member member) {
+        try {
+            member.setRole(Role.GENERAL_MEMBER);
+            member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
+            return true;
+        } catch (Exception e){
+            return false;
+        }
     }
 }
