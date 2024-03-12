@@ -1,8 +1,10 @@
 package com.example.builtinboard.service.member;
 
+import com.example.builtinboard.domain.MemberDTO;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -43,10 +45,12 @@ public class MemberSignupService {
         return false;
     }
 
-    public boolean createMember(Member member) {
+    public boolean createMember(@Valid MemberDTO memberDTO) {
         try {
+            Member member = memberDTO.toEntity();
+            String password = bCryptPasswordEncoder.encode(memberDTO.getPassword());
+            member.passwordEncode(password);
             member.setRole(Role.GENERAL_MEMBER);
-            member.setPassword(bCryptPasswordEncoder.encode(member.getPassword()));
             memberRepository.save(member);
             return true;
         } catch (Exception e) {

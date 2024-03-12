@@ -1,5 +1,6 @@
 package com.example.builtinboard.controller.member;
 
+import com.example.builtinboard.domain.MemberDTO;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.service.member.MemberSignupService;
 import jakarta.validation.Valid;
@@ -68,12 +69,12 @@ public class MemberSignupController {
     }
 
     @PostMapping("/create")
-    public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody Member member,
+    public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody MemberDTO memberDTO,
                                                    BindingResult bindingResult){
         if(bindingResult.hasErrors()){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
-        if(memberSignupService.createMember(member)){
+        if(memberSignupService.createMember(memberDTO)){
             return ResponseEntity.status(HttpStatus.OK).build();
         }else {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
