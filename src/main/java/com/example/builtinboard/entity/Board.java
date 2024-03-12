@@ -2,7 +2,9 @@ package com.example.builtinboard.entity;
 
 import jakarta.persistence.*;
 import lombok.Builder;
-import lombok.Data;
+
+import java.time.ZoneId;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor
-@Table(name="board")
+@Table(name = "board")
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,13 +27,13 @@ public class Board {
     private LocalDateTime inserted;
     @Column(name = "writer", nullable = false)
     private String writer;
+
     @PrePersist
-    public void prePersist() {
-        this.inserted = LocalDateTime.now();
+    public void setKoreaTimeZone() {
+        this.inserted = LocalDateTime.now(ZoneId.of("Asia/Seoul"));
     }
 
     @Builder
-
     public Board(Long id, String title, String content, String writer) {
         this.id = id;
         this.title = title;
