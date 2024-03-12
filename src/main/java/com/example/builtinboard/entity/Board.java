@@ -1,12 +1,16 @@
 package com.example.builtinboard.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@NoArgsConstructor
 @Table(name="board")
 public class Board {
     @Id
@@ -24,5 +28,14 @@ public class Board {
     @PrePersist
     public void prePersist() {
         this.inserted = LocalDateTime.now();
+    }
+
+    @Builder
+
+    public Board(Long id, String title, String content, String writer) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.writer = writer;
     }
 }
