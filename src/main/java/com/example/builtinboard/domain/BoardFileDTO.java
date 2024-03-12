@@ -9,17 +9,20 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardFileDTO {
     private Long id;
-    private String name;
+    private Long boardId;
     private String fileName;
 
     @Builder
-    public BoardFileDTO(Long id, String name, String fileName) {
-        this.id = id;
-        this.name = name;
+    public BoardFileDTO(Long boardId, String fileName) {
+        this.boardId = boardId;
         this.fileName = fileName;
     }
 
-//    public BoardFile toEntity(){
-//
-//    }
+    public BoardFile toEntity() {
+        return BoardFile.builder()
+                .id(id)
+                .boardId(boardId)
+                .fileName(fileName)
+                .build();
+    }
 }
