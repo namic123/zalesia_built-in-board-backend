@@ -1,12 +1,16 @@
 package com.example.builtinboard.entity;
 
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
-@Data
+@Getter
+@NoArgsConstructor
 @Table(name = "member")
 public class Member {
     @Id
@@ -38,6 +42,21 @@ public class Member {
     @Column(name = "role")
     private Role role;
 
+    @Builder
+    public Member(Long id, String name, String memberId, String password, String nickname, String email, Role role) {
+        this.name = name;
+        this.memberId = memberId;
+        this.password = password;
+        this.nickname = nickname;
+        this.email = email;
+        this.role = role;
+    }
+    public void setRole(Role role){
+        this.role = role;
+    }
+    public void passwordEncode(String password){
+        this.password = password;
+    }
     @PrePersist
     public void prePersist() {
         this.signupDate = LocalDateTime.now();
