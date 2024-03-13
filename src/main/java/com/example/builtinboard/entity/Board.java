@@ -1,5 +1,7 @@
 package com.example.builtinboard.entity;
 
+import com.example.builtinboard.domain.BoardDTO;
+import com.example.builtinboard.util.AppUtil;
 import jakarta.persistence.*;
 import lombok.Builder;
 
@@ -39,5 +41,15 @@ public class Board {
         this.title = title;
         this.content = content;
         this.writer = writer;
+    }
+
+    public BoardDTO toDto(){
+        return BoardDTO.builder()
+                .id(id)
+                .title(title)
+                .content(content)
+                .writer(writer)
+                .inserted(AppUtil.getAgo(inserted))
+                .build();
     }
 }

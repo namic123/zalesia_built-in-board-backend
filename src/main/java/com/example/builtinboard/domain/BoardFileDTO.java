@@ -13,7 +13,8 @@ public class BoardFileDTO {
     private String fileName;
 
     @Builder
-    public BoardFileDTO(Long boardId, String fileName) {
+    public BoardFileDTO(Long id, Long boardId, String fileName) {
+        this.id = id;
         this.boardId = boardId;
         this.fileName = fileName;
     }
