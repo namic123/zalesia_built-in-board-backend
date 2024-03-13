@@ -14,10 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,26 +27,42 @@ public class BoardService {
     // 게시글 생성
     public boolean create(BoardDTO boardDTO, MultipartFile[] files) throws IOException {
         Board board = boardDTO.toEntity();
-
         try {
             boardRepository.save(board);
             if (files != null) {
-                // 파일 저장 경로(실제 서비스가 아니므로, Project 폴더에 저장)
-                String uploadPath = System.getProperty("user.dir") + "/src/main/java/com/example/builtinboard/files";
-                File uploadDir = new File(uploadPath);
-                // 앞선 path가 존재하지 않으면 생성
-                if(!uploadDir.exists()){
-                    uploadDir.mkdir();
-                }
-                for (MultipartFile file : files) {
-                    BoardFileDTO boardFileDTO = new BoardFileDTO(null, board.getId(), file.getOriginalFilename());
-                    boardFileRepository.save(boardFileDTO.toEntity());
-                }
+                saveFiles(board, files);
             }
             return true;
         } catch (Exception e) {
-            log.error(e.getMessage());
+            log.error("에러: 게시글 작성 오류" + e.getMessage(), e);
             return false;
+        }
+    }
+
+    private void saveFiles(Board board, MultipartFile[] files) throws IOException{
+        // 파일 저장 경로(서비스 할 것이 아니므로, Project 폴더에 저장)
+        String uploadPath = System.getProperty("user.dir")
+                            + File.separator + "src"
+                            + File.separator + "main"
+                            + File.separator + "resources"
+                            + File.separator + "public"
+                            + File.separator + "boardfiles"
+                            + File.separator + board.getId();
+        File uploadDir = new File(uploadPath);
+        // 설정 path가 존재하지 않으면 생성
+        if (!uploadDir.exists()) {
+            uploadDir.mkdirs();
+        }
+        for (MultipartFile file : files) {
+            // 파일명 중복 방지
+            UUID uuid = UUID.randomUUID();
+            String fileName = uuid.toString() + "_" + file.getOriginalFilename();
+
+            BoardFileDTO boardFileDTO = new BoardFileDTO(null, board.getId(), fileName);
+            boardFileRepository.save(boardFileDTO.toEntity());
+            String filePath = uploadPath + "/" + fileName;
+            File fillSave = new File(filePath);
+            file.transferTo(fillSave);
         }
     }
 

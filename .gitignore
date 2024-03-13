@@ -38,3 +38,5 @@ out/
 
 ### yml
 /src/main/resources/application.yml
+### boardfiles
+/src/main/resources/public/boardfiles
