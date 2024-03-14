@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Iterator;
 
 // 로그인 검증을 위한 커스텀 필터
+// 이 필터에 의해 로그인 검증이되므로, 따로 Controller를 작성할 필요가 없음.
 public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
@@ -25,6 +26,8 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        // 커스텀 로그인 경로 설정
+        setFilterProcessesUrl("/api/member/login");
     }
 
     // 요청에서 아이디와 비밀번호 추출 후, 토큰에 담아서 authenticationManager에 전달하는 역할을함.
@@ -55,7 +58,7 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         // 토큰 생성
         String token = jwtUtil.createJwt(memberId, role, 60 * 60 * 10L);
         // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
-        response.addHeader("Authorization", "Bearer" + token);
+        response.addHeader("Authorization", "Bearer " + token);
     }
 
     // 로그인 검증 실패시, 실행 메서드
