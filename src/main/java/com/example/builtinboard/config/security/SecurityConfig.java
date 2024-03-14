@@ -1,5 +1,6 @@
 package com.example.builtinboard.config.security;
 
+import com.example.builtinboard.config.jwt.JWTFilter;
 import com.example.builtinboard.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,9 @@ public class SecurityConfig {
                 // 경로별 인가 작업
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
-                // 커스텀 필터로 필터링
+                // JWTFilter 등록 (토큰 유효성 검증)
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginCustomFilter.class)
+                // 커스텀 필터로 필터링 (로그인 검증)
                 .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // 세션 사용 안함
                 .sessionManagement((sessionManagement) ->
