@@ -1,5 +1,6 @@
 package com.example.builtinboard.config.security;
 
+import com.example.builtinboard.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,11 +17,11 @@ import java.io.IOException;
 // 로그인 검증을 위한 커스텀 필터
 public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
+    private final JWTUtil jwtUtil;
 
-    public LoginCustomFilter(AuthenticationManager authenticationManager){
+    public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil){
         this.authenticationManager = authenticationManager;
-
-
+        this.jwtUtil = jwtUtil;
     }
 
     // 요청에서 아이디와 비밀번호 추출 후, 토큰에 담아서 authenticationManager에 전달하는 역할을함.
