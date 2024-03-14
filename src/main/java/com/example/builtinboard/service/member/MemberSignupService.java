@@ -29,7 +29,7 @@ public class MemberSignupService {
 
     public boolean getMemberId(String memberId) {
         // 아이디가 존재할 경우
-        if (memberRepository.findByMemberId(memberId).isPresent()) {
+        if (memberRepository.findByMemberId(memberId) != null) {
             return true;
         }
         // 존재하지 않을 경우
