@@ -21,9 +21,11 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
 
 
     }
+
+    // 요청에서 아이디와 비밀번호 추출 후, 토큰에 담아서 authenticationManager에 전달하는 역할을함.
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        // 요청에서 username과 password 추출
+        // 요청에서 id와 password 추출
         String username = obtainUsername(request);
         String password = obtainPassword(request);
 
