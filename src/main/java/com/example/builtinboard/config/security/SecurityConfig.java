@@ -28,11 +28,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Slf4j
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
     // AuthenticationManager가 인자로 받을 AuthenticationConfiguration 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
+
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
         this.authenticationConfiguration = authenticationConfiguration;
     }
@@ -44,14 +44,14 @@ public class SecurityConfig {
                 // csrf disable
                 .csrf((auth) -> auth.disable())
                 // Form 로그인 방식 disable
-                .formLogin((auth)-> auth.disable())
+                .formLogin((auth) -> auth.disable())
                 // http basic 인증 방식 disable
-                .httpBasic((auth)-> auth.disable())
+                .httpBasic((auth) -> auth.disable())
                 // 경로별 인가 작업
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
                 // 커스텀 필터로 필터링
-                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration)),UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration)), UsernamePasswordAuthenticationFilter.class)
                 // 세션 사용 안함
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(STATELESS));
@@ -67,6 +67,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
+
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
