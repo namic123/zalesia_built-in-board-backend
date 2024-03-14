@@ -29,7 +29,7 @@ public class JWTUtil {
                 .build()
                 .parseClaimsJws(token)
                 .getBody()
-                .get("memberId", String.class);
+                .get("username", String.class);
     }
 
     // 유저 권한 정보 추출
@@ -54,10 +54,10 @@ public class JWTUtil {
     }
 
     // JWT 토큰 생성
-    public String createJwt(String memberId, String role, Long expiredMillisecond) {
+    public String createJwt(String username, String role, Long expiredMillisecond) {
         // Claims: Token payload에 들어가는 데이터
         Claims claims = Jwts.claims();
-        claims.put("memberId", memberId);
+        claims.put("username", username);
         claims.put("role", role);
 
         return Jwts.builder()

@@ -36,7 +36,8 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         // 요청에서 id와 password 추출
         String username = obtainUsername(request);
         String password = obtainPassword(request);
-
+        System.out.println("username = " + username);
+        System.out.println("password = " + password);
         // username과 password 검증을 위해 token에 담는다
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password, null);
 
@@ -50,13 +51,13 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         // getPrincipal 메서드를 통해 현재 인증된 사용자의 세부 정보 추출
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authResult.getPrincipal();
         // 인증된 id 및 권한 정보 추출
-        String memberId = customMemberDetails.getUsername();
+        String username = customMemberDetails.getUsername();
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
         // 토큰 생성
-        String token = jwtUtil.createJwt(memberId, role, 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
         // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
         response.addHeader("Authorization", "Bearer " + token);
     }
