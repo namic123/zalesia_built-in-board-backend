@@ -10,16 +10,19 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Iterator;
 
 // 로그인 검증을 위한 커스텀 필터
 public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
-    public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil){
+    public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
     }
@@ -41,10 +44,20 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 검증 성공 후, 실행 메서드(JWT 발급)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
-    }
-    // 로그인 검증 실패시, 실행 메서드
+        CustomMemberDetails customMemberDetails = (CustomMemberDetails) authResult.getPrincipal();
+        String memberId = customMemberDetails.getUsername();
 
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
+        GrantedAuthority auth = iterator.next();
+
+        String role = auth.getAuthority();
+        String token = jwtUtil.createJwt(memberId, role, 60 * 60 * 10L);
+
+        response.addHeader("Authorization", "Bearer" + token);
+    }
+
+    // 로그인 검증 실패시, 실행 메서드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         super.unsuccessfulAuthentication(request, response, failed);
