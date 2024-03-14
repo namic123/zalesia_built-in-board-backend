@@ -33,10 +33,16 @@ public class SecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(AbstractHttpConfigurer::disable)
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
+                // csrf disable
+                .csrf((auth) -> auth.disable())
+                // Form 로그인 방식 disable
+                .formLogin((auth)-> auth.disable())
+                // http basic 인증 방식 disable
+                .httpBasic((auth)-> auth.disable())
+                // 세션 사용 안함
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(STATELESS))
+                // 경로별 인가 작업
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
         return httpSecurity.build();
