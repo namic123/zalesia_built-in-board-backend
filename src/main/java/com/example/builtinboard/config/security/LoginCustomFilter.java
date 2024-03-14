@@ -44,16 +44,17 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 검증 성공 후, 실행 메서드(JWT 발급)
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        // getPrincipal 메서드를 통해 현재 인증된 사용자의 세부 정보 추출
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authResult.getPrincipal();
+        // 인증된 id 및 권한 정보 추출
         String memberId = customMemberDetails.getUsername();
-
         Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
-
         String role = auth.getAuthority();
+        // 토큰 생성
         String token = jwtUtil.createJwt(memberId, role, 60 * 60 * 10L);
-
+        // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
         response.addHeader("Authorization", "Bearer" + token);
     }
 
