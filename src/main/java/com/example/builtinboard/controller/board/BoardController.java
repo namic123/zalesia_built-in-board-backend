@@ -46,7 +46,7 @@ public class BoardController {
                                              @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files
     ) throws IOException {
         try {
-            BoardDTO boardDTO = new BoardDTO(null, content, title, writer, null);
+            BoardDTO boardDTO = new BoardDTO(null, title, content, writer, null);
             boardService.create(boardDTO, files);
             return ResponseEntity.status(HttpStatus.OK).build();
         } catch (IOException e) {

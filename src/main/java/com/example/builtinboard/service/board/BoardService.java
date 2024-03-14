@@ -84,6 +84,7 @@ public class BoardService {
                 .map(Board::toDto)
                 .orElseThrow(() -> new EntityNotFoundException("게시글을 찾지 못했습니다" + id));
 
+
         // 게시글에 조회된 파일들을 DTO로 변환
         List<BoardFileDTO> boardFileDTOs = boardFileRepository.findAllByBoardId(id)
                 .stream()
