@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.config.annotation.web.configurers.HeadersCon
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -28,6 +31,11 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class SecurityConfig {
+    // AuthenticationManager가 인자로 받을 AuthenticationConfiguration 객체 생성자 주입
+    private final AuthenticationConfiguration authenticationConfiguration;
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -39,12 +47,14 @@ public class SecurityConfig {
                 .formLogin((auth)-> auth.disable())
                 // http basic 인증 방식 disable
                 .httpBasic((auth)-> auth.disable())
-                // 세션 사용 안함
-                .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(STATELESS))
                 // 경로별 인가 작업
                 .authorizeHttpRequests((authorizeHttpRequests) ->
-                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll());
+                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
+                // 커스텀 필터로 필터링
+                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration)),UsernamePasswordAuthenticationFilter.class)
+                // 세션 사용 안함
+                .sessionManagement((sessionManagement) ->
+                        sessionManagement.sessionCreationPolicy(STATELESS));
         return httpSecurity.build();
     }
 
@@ -53,6 +63,10 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
+    }
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
