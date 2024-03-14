@@ -61,6 +61,7 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     // 로그인 검증 실패시, 실행 메서드
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
-        super.unsuccessfulAuthentication(request, response, failed);
+        // 인증 실패시 401(Unauthorized) 응답
+        response.setStatus(401);
     }
 }
