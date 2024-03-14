@@ -51,6 +51,12 @@ public class Member {
         this.email = email;
         this.role = role;
     }
+    public void setMemberId(String memberId) {this.memberId = memberId;}
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public void setRole(Role role){
         this.role = role;
     }
