@@ -31,11 +31,11 @@ public class CustomMemberDetails implements UserDetails {
     public String getUsername() {
         return member.getMemberId();
     }
-
     @Override
     public String getPassword() {
         return member.getPassword();
     }
+
 
     @Override
     public boolean isAccountNonExpired() {
@@ -55,5 +55,9 @@ public class CustomMemberDetails implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public String getNickname(){
+        return member.getNickname();
     }
 }

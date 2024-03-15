@@ -1,6 +1,7 @@
 package com.example.builtinboard.config.security;
 
 import com.example.builtinboard.util.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -15,7 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 // 로그인 검증을 위한 커스텀 필터
 // 이 필터에 의해 로그인 검증이되므로, 따로 Controller를 작성할 필요가 없음.
@@ -60,7 +63,26 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
         // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
         response.addHeader("Authorization", "Bearer " + token);
-    }
+
+        /* 로그인 정보 응답 */
+        // role 커스텀
+        String customRole = role;
+        if(customRole.equals("ADMIN")){
+            customRole = "운영자";
+        }else{
+            customRole = "일반 사용자";
+        }
+
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("memberId", username);
+        responseData.put("role", customRole);
+        responseData.put("nickname", customMemberDetails.getNickname());
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        new ObjectMapper().writeValue(response.getWriter(), responseData);
+        }
 
     // 로그인 검증 실패시, 실행 메서드
     @Override
