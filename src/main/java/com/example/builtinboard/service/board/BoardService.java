@@ -25,18 +25,18 @@ public class BoardService {
     private final BoardFileRepository boardFileRepository;
 
     // 게시글 생성
-    public boolean create(BoardDTO boardDTO, MultipartFile[] files) throws IOException {
+    public boolean create(BoardDTO boardDTO, MultipartFile[] files) {
         Board board = boardDTO.toEntity();
-        try {
-            boardRepository.save(board);
-            if (files != null) {
+        boardRepository.save(board);
+        if (files != null && files.length > 0) {
+            try {
                 saveFiles(board, files);
+            } catch (IOException e) {
+                log.error("파일 저장 중 오류 => " + e.getMessage(), e);
             }
             return true;
-        } catch (Exception e) {
-            log.error("에러: 게시글 작성 오류" + e.getMessage(), e);
-            return false;
         }
+        return true;
     }
 
     private void saveFiles(Board board, MultipartFile[] files) throws IOException{

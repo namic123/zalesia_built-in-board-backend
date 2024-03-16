@@ -21,7 +21,7 @@ public class MemberController {
     // 중복 확인 - 닉네임
     @GetMapping("/check/nickname")
     public ResponseEntity<?> checkNickname(@RequestParam("nickname") String nickname) {
-        boolean exists = memberService.getNickname(nickname);
+        boolean exists = memberService.existsByNickname(nickname);
         // 존재 ? 409(리소스 충돌) : 200(OK)
         return exists ? ResponseEntity.status(409).build()
                 : ResponseEntity.ok().build();
@@ -30,7 +30,7 @@ public class MemberController {
     // 중복 확인 - 이메일
     @GetMapping("/check/email")
     public ResponseEntity<HttpStatus> checkEmail(@RequestParam("email") String email) {
-        boolean exists = memberService.getEmail(email);
+        boolean exists = memberService.existsByEmail(email);
 
         return exists ? ResponseEntity.status(409).build()
                 : ResponseEntity.ok().build();
@@ -38,7 +38,7 @@ public class MemberController {
 
     @GetMapping("/check/memberId")
     public ResponseEntity<HttpStatus> checkId(@RequestParam("memberId") String memberId) {
-        boolean exists = memberService.getMemberId(memberId);
+        boolean exists = memberService.existsByMemberId(memberId);
 
         return exists ? ResponseEntity.status(409).build()
                 : ResponseEntity.ok().build();

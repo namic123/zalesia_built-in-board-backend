@@ -6,6 +6,8 @@ import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,39 +18,24 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public boolean getNickname(String nickname) {
-        // 닉네임이 존재할 경우
-        if (memberRepository.findByNickname(nickname).isPresent()) {
-
-            return true;
-        }
-        // 존재하지 않을 경우
-        return false;
+    public boolean existsByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname).isPresent();
     }
 
-    public boolean getMemberId(String memberId) {
-        // 아이디가 존재할 경우
-        if (memberRepository.findByMemberId(memberId) != null) {
-            return true;
-        }
-        // 존재하지 않을 경우
-        return false;
+    public boolean existsByMemberId(String memberId) {
+        return memberRepository.findByMemberId(memberId) != null;
     }
 
-    public boolean getEmail(String email) {
-        // 이메일이 존재할 경우
-        if (memberRepository.findByEmail(email).isPresent()) {
-            return true;
-        }
-        // 존재하지 않는 경우
-        return false;
+    public boolean existsByEmail(String email) {
+        return memberRepository.findByEmail(email).isPresent();
     }
 
-    public boolean createMember(@Valid MemberDTO memberDTO) {
+    public boolean createMember(MemberDTO memberDTO) {
         try {
             Member member = memberDTO.toEntity();
             String password = bCryptPasswordEncoder.encode(memberDTO.getPassword());
@@ -56,7 +43,8 @@ public class MemberService {
             member.setRole(Role.GENERAL_MEMBER);
             memberRepository.save(member);
             return true;
-        } catch (Exception e) {
+        }catch (DataAccessException e){
+            log.error("멤버를 생성 과정에 문제 발생 => ",e);
             return false;
         }
     }
