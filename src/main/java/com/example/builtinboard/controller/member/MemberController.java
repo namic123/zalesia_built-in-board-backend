@@ -9,60 +9,48 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/member")
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
 
-    // 중복 확인
-    @GetMapping(value = "/check", params = "nickname")
-    public ResponseEntity<HttpStatus> checkNickname(@RequestParam Optional<String> nickname) {
+    // 중복 확인 - 닉네임
+    @GetMapping("/check/nickname")
+    public ResponseEntity<HttpStatus> checkNickname(@RequestParam("nickname") String nickname) {
         System.out.println("controller :  " + nickname);
         // null 여부
-        if (nickname.isPresent()) {
-            if (memberService.getNickname(nickname.get())) {
-                // 409 에러: 리소스 충돌
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            } else {
-                // 200 OK
-                return ResponseEntity.status(HttpStatus.OK).build();
-            }
+        if(nickname != null) {
+            boolean exists = memberService.getNickname(nickname);
+            // 존재 ? 409(리소스 충돌) : 200(OK)
+            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
         } else {
             // null인 경우, 400 에러
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-    @GetMapping(value = "/check", params = "email")
-    public ResponseEntity<HttpStatus> checkEmail(@RequestParam Optional<String> email){
-        if(email.isPresent()){
-            if(memberService.getEmail(email.get())){
-                // 409 에러: 리소스 충돌
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            } else {
-                // 200 OK
-                return ResponseEntity.status(HttpStatus.OK).build();
-            }
+
+    // 중복 확인 - 이메일
+    @GetMapping("/check/email")
+    public ResponseEntity<HttpStatus> checkEmail(@RequestParam("email") String email){
+        if(email != null) {
+            boolean exists = memberService.getEmail(email);
+            // 존재 ? 409(리소스 충돌) : 200(OK)
+            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
         } else {
             // null인 경우, 400 에러
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
     }
-    @GetMapping(value = "/check", params = "memberId")
-    public ResponseEntity<HttpStatus> checkId(@RequestParam Optional<String> memberId){
-        if(memberId.isPresent()){
-            if(memberService.getMemberId(memberId.get())){
-                // 409 에러: 리소스 충돌
-                return ResponseEntity.status(HttpStatus.CONFLICT).build();
-            } else {
-                // 200 OK
-                return ResponseEntity.status(HttpStatus.OK).build();
-            }
+    @GetMapping("/check/memberId")
+    public ResponseEntity<HttpStatus> checkId(@RequestParam("memberId") String memberId){
+        if(memberId != null) {
+            boolean exists = memberService.getMemberId(memberId);
+            // 존재 ? 409(리소스 충돌) : 200(OK)
+            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
         } else {
             // null인 경우, 400 에러
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

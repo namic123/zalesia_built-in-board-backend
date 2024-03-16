@@ -30,7 +30,7 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         // 커스텀 로그인 경로 설정
-        setFilterProcessesUrl("/api/member/login");
+        setFilterProcessesUrl("/api/members/login");
     }
 
     // 요청에서 아이디와 비밀번호 추출 후, 토큰에 담아서 authenticationManager에 전달하는 역할을함.

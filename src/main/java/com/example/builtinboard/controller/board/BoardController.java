@@ -17,11 +17,11 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/board")
+@RequestMapping("/api/boards")
 public class BoardController {
     private final BoardService boardService;
 
-    @GetMapping("id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<?> view(@PathVariable Integer id){
         System.out.println("id = " + id);
         try {
@@ -35,11 +35,11 @@ public class BoardController {
         }
     }
 
-    @GetMapping("list")
+    @GetMapping
     public Map<String, Object> list(){
         return boardService.getBoardList();
     }
-    @PostMapping("create")
+    @PostMapping
     public ResponseEntity<HttpStatus> create(@RequestParam String content,
                                              @RequestParam String title,
                                              @RequestParam String writer,
