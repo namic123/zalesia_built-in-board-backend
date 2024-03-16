@@ -6,6 +6,7 @@ import com.example.builtinboard.service.board.BoardService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -18,39 +19,27 @@ import java.util.Map;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/boards")
+@Slf4j
 public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> view(@PathVariable Integer id){
-        System.out.println("id = " + id);
-        try {
-            BoardDTO boardDTO = boardService.getBoardById(id);
-            System.out.println(boardDTO.getTitle() + boardDTO.getContent() + boardDTO.getWriter());
-            return ResponseEntity.ok().body(boardDTO);
-        } catch (EntityNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e){
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 내부 오류가 발생했습니다.");
-        }
+    public ResponseEntity<BoardDTO> view(@PathVariable Integer id){
+        log.info("Fetching board with id = ", id);
+        BoardDTO boardDTO = boardService.getBoardById(id);
+        return ResponseEntity.ok(boardDTO);
     }
 
     @GetMapping
-    public Map<String, Object> list(){
-        return boardService.getBoardList();
+    public ResponseEntity<?> list(){
+        return ResponseEntity.ok(boardService.getBoardList());
     }
     @PostMapping
-    public ResponseEntity<HttpStatus> create(@RequestParam String content,
-                                             @RequestParam String title,
-                                             @RequestParam String writer,
+    public ResponseEntity<HttpStatus> create(@ModelAttribute BoardDTO boardDTO,
                                              @RequestParam(value = "uploadFiles[]", required = false) MultipartFile[] files
     ) throws IOException {
-        try {
-            BoardDTO boardDTO = new BoardDTO(null, title, content, writer, null);
-            boardService.create(boardDTO, files);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        log.info("Create a new board with title = ", boardDTO.getTitle());
+        boardService.create(boardDTO, files);
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

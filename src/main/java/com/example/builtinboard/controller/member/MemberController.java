@@ -20,53 +20,34 @@ public class MemberController {
 
     // 중복 확인 - 닉네임
     @GetMapping("/check/nickname")
-    public ResponseEntity<HttpStatus> checkNickname(@RequestParam("nickname") String nickname) {
-        System.out.println("controller :  " + nickname);
-        // null 여부
-        if(nickname != null) {
-            boolean exists = memberService.getNickname(nickname);
-            // 존재 ? 409(리소스 충돌) : 200(OK)
-            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            // null인 경우, 400 에러
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<?> checkNickname(@RequestParam("nickname") String nickname) {
+        boolean exists = memberService.getNickname(nickname);
+        // 존재 ? 409(리소스 충돌) : 200(OK)
+        return exists ? ResponseEntity.status(409).build()
+                : ResponseEntity.ok().build();
     }
 
     // 중복 확인 - 이메일
     @GetMapping("/check/email")
-    public ResponseEntity<HttpStatus> checkEmail(@RequestParam("email") String email){
-        if(email != null) {
-            boolean exists = memberService.getEmail(email);
-            // 존재 ? 409(리소스 충돌) : 200(OK)
-            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            // null인 경우, 400 에러
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<HttpStatus> checkEmail(@RequestParam("email") String email) {
+        boolean exists = memberService.getEmail(email);
+
+        return exists ? ResponseEntity.status(409).build()
+                : ResponseEntity.ok().build();
     }
+
     @GetMapping("/check/memberId")
-    public ResponseEntity<HttpStatus> checkId(@RequestParam("memberId") String memberId){
-        if(memberId != null) {
-            boolean exists = memberService.getMemberId(memberId);
-            // 존재 ? 409(리소스 충돌) : 200(OK)
-            return exists ? ResponseEntity.status(HttpStatus.CONFLICT).build() : ResponseEntity.status(HttpStatus.OK).build();
-        } else {
-            // null인 경우, 400 에러
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+    public ResponseEntity<HttpStatus> checkId(@RequestParam("memberId") String memberId) {
+        boolean exists = memberService.getMemberId(memberId);
+
+        return exists ? ResponseEntity.status(409).build()
+                : ResponseEntity.ok().build();
     }
 
     @PostMapping("/create")
-    public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody MemberDTO memberDTO,
-                                                   BindingResult bindingResult){
-        if(bindingResult.hasErrors()){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        if(memberService.createMember(memberDTO)){
-            return ResponseEntity.status(HttpStatus.OK).build();
-        }else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+    public ResponseEntity<HttpStatus> createMember(@Valid @RequestBody MemberDTO memberDTO) {
+        boolean created = memberService.createMember(memberDTO);
+        return created ? ResponseEntity.status(201).build()
+                : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
