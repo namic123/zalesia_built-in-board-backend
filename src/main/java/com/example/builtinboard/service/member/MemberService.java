@@ -44,7 +44,7 @@ public class MemberService {
             memberRepository.save(member);
             return true;
         }catch (DataAccessException e){
-            log.error("멤버를 생성 과정에 문제 발생 : {} ",e);
+            log.error("멤버 생성 과정에 문제 발생 : {} ",e);
             return false;
         }
     }

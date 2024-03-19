@@ -6,21 +6,25 @@ import com.example.builtinboard.entity.Board;
 import com.example.builtinboard.entity.BoardFile;
 import com.example.builtinboard.repository.board.BoardFileRepository;
 import com.example.builtinboard.repository.board.BoardRepository;
-import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -30,6 +34,9 @@ import java.util.stream.Collectors;
 public class BoardService {
     private final BoardRepository boardRepository;
     private final BoardFileRepository boardFileRepository;
+    // 기본 파일 저장 위치
+    private final String fileBasePath = "src/main/resources/public/boardfiles";
+    ;
 
     // 게시글 생성
     public boolean create(BoardDTO boardDTO, MultipartFile[] files) {
@@ -121,6 +128,14 @@ public class BoardService {
         }
     }
 
-    public Resource getFileResources(String boardId, String fileName) {
+    public Resource getFileResources(String boardId, String fileName) throws MalformedURLException {
+        Path filePath = Paths.get(fileBasePath + "/" + boardId + "/" + fileName).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+
+        if(!resource.exists()){
+            throw new RuntimeException("파일을 찾지 못했습니다 = "+ fileName);
+        }
+
+        return resource;
     }
 }
