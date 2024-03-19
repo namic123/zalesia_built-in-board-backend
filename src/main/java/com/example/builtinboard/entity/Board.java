@@ -9,6 +9,7 @@ import java.time.ZoneId;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
@@ -21,8 +22,10 @@ public class Board {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
+    @Setter
     @Column(name = "title", nullable = false)
     private String title;
+    @Setter
     @Column(name = "content", nullable = false)
     private String content;
     @Column(name = "inserted", nullable = false)
@@ -42,7 +45,9 @@ public class Board {
         this.content = content;
         this.writer = writer;
     }
-
+    public String getAgo(){
+        return AppUtil.getAgo(inserted);
+    }
     public BoardDTO toDto(){
         return BoardDTO.builder()
                 .id(id)

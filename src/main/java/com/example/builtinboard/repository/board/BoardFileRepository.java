@@ -10,5 +10,5 @@ import java.util.Optional;
 
 @Repository
 public interface BoardFileRepository extends JpaRepository<BoardFile, Integer> {
-    List<BoardFile> findAllByBoardId(Integer boardId);
+    List<BoardFile> findByBoardId(Integer boardId);
 }

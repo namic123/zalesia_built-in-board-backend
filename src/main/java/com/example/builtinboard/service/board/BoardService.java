@@ -6,10 +6,17 @@ import com.example.builtinboard.entity.Board;
 import com.example.builtinboard.entity.BoardFile;
 import com.example.builtinboard.repository.board.BoardFileRepository;
 import com.example.builtinboard.repository.board.BoardRepository;
+import jakarta.annotation.Resource;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -32,7 +39,7 @@ public class BoardService {
             try {
                 saveFiles(board, files);
             } catch (IOException e) {
-                log.error("파일 저장 중 오류 => " + e.getMessage(), e);
+                log.error("파일 저장 중 오류 : {} " + e.getMessage(), e);
             }
             return true;
         }
@@ -66,16 +73,10 @@ public class BoardService {
         }
     }
 
-    public Map<String, Object> getBoardList() {
-        Map<String, Object> list = new HashMap<>();
-        // inserted 형식 변환을 위한 데이터 변환
-        List<BoardDTO> boardList = boardRepository.findAll()
-                .stream()
-                .map(Board::toDto)
-                .collect(Collectors.toList());
-
-        list.put("boardList", boardList);
-        return list;
+    public Page<Board> getBoardList(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Board> pagination = boardRepository.findAll(pageable);
+        return boardRepository.findAll(pageable);
     }
 
     public BoardDTO getBoardById(Integer id) {
@@ -86,17 +87,40 @@ public class BoardService {
 
 
         // 게시글에 조회된 파일들을 DTO로 변환
-        List<BoardFileDTO> boardFileDTOs = boardFileRepository.findAllByBoardId(id)
+        List<BoardFileDTO> boardFileDTOs = boardFileRepository.findByBoardId(id)
                 .stream()
                 .map(BoardFile::toDto)
                 .collect(Collectors.toList());
-        ;
+        System.out.println("boardFileDTOs.size() = " + boardFileDTOs.size());
 
         if (!boardFileDTOs.isEmpty()) {
             boardDTO.setFiles(boardFileDTOs);
         }
-        System.out.println(boardDTO.getTitle() + boardDTO.getContent() + boardDTO.getWriter());
+        System.out.println(boardDTO.getTitle() + boardDTO.getContent() + boardDTO.getWriter() +"files = "+ boardDTO.getFiles());
         return boardDTO;
 
+    }
+
+    public void updateBoardById(Integer id, String title, String content) {
+        Board board = boardRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("게시글을 찾지 못했습니다. id =  " + id));
+        board.setTitle(title);
+        board.setContent(content);
+        boardRepository.save(board);
+    }
+
+    @Transactional
+    public void deleteBoardById(Integer id) {
+        try {
+            boardRepository.deleteById(id);
+            log.info("Board deleted with id: {}", id);
+        } catch (EmptyResultDataAccessException e) {
+            log.error("No board found with id: {}", id, e);
+
+            throw new EntityNotFoundException("게시글을 찾지 못했습니다. id = " + id);
+        }
+    }
+
+    public Resource getFileResources(String boardId, String fileName) {
     }
 }

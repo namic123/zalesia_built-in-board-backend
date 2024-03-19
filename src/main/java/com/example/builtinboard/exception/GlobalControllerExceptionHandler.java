@@ -14,15 +14,15 @@ public class GlobalControllerExceptionHandler {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(EntityNotFoundException exception, WebRequest request){
-        log.error("RuntimeException 발생 -> " ,exception);
-        log.error("요청 내용 -> " ,request);
+        log.error("RuntimeException 발생 : {} " ,exception);
+        log.error("요청 내용 : {} " ,request);
         return ResponseEntity.internalServerError().body("서버 내부에 오류가 발생했습니다.");
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException exception, WebRequest request){
-        log.error("EntityNotFoundException 발생 -> " ,exception);
-        log.error("요청 내용 -> " ,request);
+        log.error("EntityNotFoundException 발생 : {}" ,exception);
+        log.error("요청 내용 : {} " ,request);
         return ResponseEntity.notFound().build();
     }
 
