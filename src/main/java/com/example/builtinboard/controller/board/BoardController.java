@@ -38,9 +38,10 @@ public class BoardController {
     @GetMapping
     public ResponseEntity<Page<Board>> list(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "search", required = false) String search
     ) {
-        return ResponseEntity.ok(boardService.getBoardList(page, size));
+        return ResponseEntity.ok(boardService.getBoardList(page, size, search));
     }
 
     @PostMapping

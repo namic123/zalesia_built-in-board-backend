@@ -15,6 +15,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -80,10 +81,15 @@ public class BoardService {
         }
     }
 
-    public Page<Board> getBoardList(int page, int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        Page<Board> pagination = boardRepository.findAll(pageable);
-        return boardRepository.findAll(pageable);
+    public Page<Board> getBoardList(int page, int size, String search) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
+        if (search != null && !search.isEmpty()) {
+            // 검색어가 있는 경우
+            return boardRepository.findByTitleContainingOrContentContainingOrWriterContaining(search, search, search, pageable);
+        } else {
+            // 검색어가 없는 경우
+            return boardRepository.findAll(pageable);
+        }
     }
 
     public BoardDTO getBoardById(Integer id) {
