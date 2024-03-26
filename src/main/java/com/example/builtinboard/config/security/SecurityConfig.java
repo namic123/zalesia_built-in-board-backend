@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
@@ -54,8 +55,15 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable())
                 // 경로별 인가 작업
                 .authorizeHttpRequests((authorizeHttpRequests) ->
-                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll())
-                // JWTFilter 등록 (토큰 유효성 검증)
+                        authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
+                                // 경로별 인증 요구
+                                .requestMatchers(HttpMethod.POST, "/api/boards").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.PUT, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.DELETE, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .anyRequest().authenticated()
+                )
+
+                // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginCustomFilter.class)
                 // 커스텀 필터로 필터링 (로그인 검증)
                 .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
@@ -79,6 +87,7 @@ public class SecurityConfig {
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         //  도메인, HTTP 메서드, 헤더, 인증 정보(쿠키, HTTP인증 및 SSL 인증서등), 요청결과 캐싱, 클라이언트에서 접근 가능 헤더 요청 허용
+        // singletonList는 단 하나의 요소만을 허용(불변성을 위함), 추가할 경우 UnsupportedOperationException 발생.
         corsConfiguration.setAllowedOrigins(Collections.singletonList("http://localhost:8080"));
         corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
         corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));

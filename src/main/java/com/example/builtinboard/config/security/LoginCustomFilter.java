@@ -60,7 +60,7 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
         // 토큰 생성
-        String token = jwtUtil.createJwt(username, role, 60 * 60 * 10L);
+        String token = jwtUtil.createJwt(username, role,60 * 60 * 10L);
         // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
         response.addHeader("Authorization", "Bearer " + token);
 

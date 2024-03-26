@@ -4,6 +4,7 @@ import com.example.builtinboard.config.security.CustomMemberDetails;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.util.JWTUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,48 +26,36 @@ public class JWTFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println(request.getRequestURI());
-        // Request header에서 Authorization 헤더를 찾음
-        String authorization = request.getHeader("Authorization");
+        // Request header에서 Authorization 헤더를 찾고, token 반환
+        String token = jwtUtil.resolveToken(request);
+        if(token != null){
+             logger.info("Authorization 검증 시작");
+                 if (jwtUtil.validateToken(token)) {
+                     // 토큰에서 아이디와 권한 획득
+                     String username = jwtUtil.getUsername(token);
+                     String role = jwtUtil.getRole(token);
 
-        // Authorization header 검증(Bearer 다음에 토큰 정보가 포함되므로 공백을 만듬)
-        if (authorization == null || !authorization.startsWith("Bearer ")) {
-            logger.error("token is null");
-            filterChain.doFilter(request, response);
-            // token이 비어있는 경우, 메서드 종료
-            return;
+                     // MemberEntity를 생성해서 값 세팅
+                     Member member = new Member();
+                     member.setMemberId(username);
+                     member.setRole(Role.valueOf(role));
+
+                     // UserDetails에 회원 정보 객체 담기
+                     CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
+
+                     // Security 인증 토큰 생성
+                     Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+
+                     // SecurityContext에 설정함으로써, 사용자가 인증된 상태임을 알림
+                     SecurityContextHolder.getContext().setAuthentication(authToken);
+
+
+                 }else{
+                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                     return;
+                 }
+
         }
-
-        logger.info("Authorization 검증 시작");
-
-        // Bearer 제거하고 토큰만 획득
-        String token = authorization.split(" ")[1];
-
-        // 토큰 소멸 시간 검증
-        if(jwtUtil.isExpired(token)){
-            logger.error("Token 시간 만료");
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        // 토큰에서 아이디와 권한 획득
-        String username = jwtUtil.getUsername(token);
-        String role = jwtUtil.getRole(token);
-
-        // MemberEntity를 생성해서 값 세팅
-        Member member = new Member();
-        member.setMemberId(username);
-        member.setPassword("temppassword");
-        member.setRole(Role.valueOf(role));
-
-        // UserDetails에 회원 정보 객체 담기
-        CustomMemberDetails customMemberDetails = new CustomMemberDetails(member);
-
-        // Security 인증 토큰 생성
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
-
-        // SecurityContext에 설정함으로써, 사용자가 인증된 상태임을 알림
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-
         // 요청 처리 진행
         filterChain.doFilter(request, response);
     }
