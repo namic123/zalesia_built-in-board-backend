@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ public class CommentService {
     private final BoardRepository boardRepository;
     private final CommentRepository commentRepository;
 
+    @Transactional
     public void create(Integer boardId, CommentDto commentDto) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 Board id: " + boardId));
@@ -35,6 +37,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional(readOnly = true)
     public Page<Comment> getCommentList(Integer boardId, int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").descending());
         Page<Comment> commentList = commentRepository.findAllByBoardId(boardId, pageable);
@@ -42,6 +45,7 @@ public class CommentService {
         return commentList;
     }
 
+    @Transactional
     public void updateById(Long id, String content) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("댓글을 찾지 못했습니다 = " + id));
@@ -49,6 +53,7 @@ public class CommentService {
         commentRepository.save(comment);
     }
 
+    @Transactional
     public void deleteById(Long id) {
         commentRepository.deleteById(id);
     }

@@ -19,20 +19,20 @@ public class CommentController {
     private final CommentService commentService;
 
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Page<Comment>> list(@PathVariable Integer id,
+    @GetMapping("/{boardId}")
+    public ResponseEntity<Page<Comment>> list(@PathVariable Integer boardId,
                                               @RequestParam(value = "page", defaultValue = "0") int page,
                                               @RequestParam(value = "size", defaultValue = "5") int size) {
-        Page<Comment> comments = commentService.getCommentList(id, page, size);
+        Page<Comment> comments = commentService.getCommentList(boardId, page, size);
         return ResponseEntity.ok(comments);
     }
 
-    @PostMapping("/{id}")
-    public ResponseEntity<HttpStatus> create(@PathVariable Integer id,
+    @PostMapping("/{boardId}")
+    public ResponseEntity<HttpStatus> create(@PathVariable Integer boardId,
                                              @RequestBody CommentDto commentDto) {
         try {
             log.info("Create a new comment with content = ", commentDto.getContent());
-            commentService.create(id, commentDto);
+            commentService.create(boardId, commentDto);
             return ResponseEntity.status(HttpStatus.CREATED).build();
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
