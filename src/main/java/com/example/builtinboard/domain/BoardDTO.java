@@ -32,10 +32,6 @@ public class BoardDTO {
 
     }
 
-
-    public String getAgo(LocalDateTime inserted){
-        return AppUtil.getAgo(inserted);
-    }
     public Board toEntity(){
         return Board.builder()
                 .id(id)

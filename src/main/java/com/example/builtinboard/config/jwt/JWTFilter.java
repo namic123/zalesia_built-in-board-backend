@@ -4,7 +4,7 @@ import com.example.builtinboard.config.security.CustomMemberDetails;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.util.JWTUtil;
-import io.jsonwebtoken.ExpiredJwtException;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
