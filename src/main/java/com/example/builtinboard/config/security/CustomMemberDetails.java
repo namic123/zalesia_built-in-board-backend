@@ -17,6 +17,8 @@ public class CustomMemberDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
+        // GrantedAuthority는 Security에서 권한 부여에 사용되는 핵심 인터페이스
+        // 사용자가 요청한 작업을 수행할 수 있는 권한을 가지고 있는지 검증해줌.
         Collection<GrantedAuthority> collection = new ArrayList<>();
         collection.add(new GrantedAuthority() {
             @Override
@@ -31,6 +33,7 @@ public class CustomMemberDetails implements UserDetails {
     public String getUsername() {
         return member.getMemberId();
     }
+
     @Override
     public String getPassword() {
         return member.getPassword();
@@ -57,7 +60,7 @@ public class CustomMemberDetails implements UserDetails {
         return true;
     }
 
-    public String getNickname(){
+    public String getNickname() {
         return member.getNickname();
     }
 }
