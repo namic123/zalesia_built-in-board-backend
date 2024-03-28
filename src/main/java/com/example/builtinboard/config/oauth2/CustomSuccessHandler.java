@@ -1,6 +1,7 @@
 package com.example.builtinboard.config.oauth2;
 
 import com.example.builtinboard.dto.CustomOAuth2User;
+import com.example.builtinboard.service.auth.AuthenticationResponseService;
 import com.example.builtinboard.util.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
@@ -23,48 +24,25 @@ import java.util.Map;
 @Component
 public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
+    private final AuthenticationResponseService authenticationResponseService;
 
-
-    public CustomSuccessHandler(JWTUtil jwtUtil) {
+    public CustomSuccessHandler(JWTUtil jwtUtil, AuthenticationResponseService authenticationResponseService) {
         this.jwtUtil = jwtUtil;
+        this.authenticationResponseService = authenticationResponseService;
     }
 
     // 인증 성공 후, 실행되는 메서드
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        System.out.println("request.getRequestURI() = " + request.getRequestURI());
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customOAuth2User.getUsername();
+        String nickname = customOAuth2User.getName();
 
-        // 권한 로드
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        response.sendRedirect("http://localhost:8080/boards");
+        authenticationResponseService.createAuthenticationResponse(response, authentication, username,nickname);
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
-
-        response.addHeader("Authorization", "Bearer " + token);
-        response.sendRedirect("http://localhost:8080/");
-
-        /* 로그인 정보 응답 */
-        // role 커스텀
-        String customRole = role;
-        if(customRole.equals("ADMIN")){
-            customRole = "운영자";
-        }else{
-            customRole = "일반 사용자";
-        }
-
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put("memberId", username);
-        responseData.put("role", customRole);
-        responseData.put("nickname", customOAuth2User.getName());
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        new ObjectMapper().writeValue(response.getWriter(), responseData);
     }
 
 }

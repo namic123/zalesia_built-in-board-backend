@@ -2,6 +2,7 @@ package com.example.builtinboard.config.security;
 
 import com.example.builtinboard.config.jwt.JWTFilter;
 import com.example.builtinboard.config.oauth2.CustomSuccessHandler;
+import com.example.builtinboard.service.auth.AuthenticationResponseService;
 import com.example.builtinboard.service.auth.CustomOAuth2UserService;
 import com.example.builtinboard.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +16,6 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -37,12 +37,14 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomSuccessHandler customSuccessHandler;
+    private final AuthenticationResponseService authenticationResponseService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, @Lazy CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, @Lazy CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler, AuthenticationResponseService authenticationResponseService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customOAuth2UserService = customOAuth2UserService;
         this.customSuccessHandler = customSuccessHandler;
+        this.authenticationResponseService = authenticationResponseService;
     }
 
     @Bean
@@ -91,7 +93,7 @@ public class SecurityConfig {
 
         httpSecurity
                 // 커스텀 필터로 필터링 (로그인 검증)
-                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil, authenticationResponseService), UsernamePasswordAuthenticationFilter.class);
 
 
         // 세션 사용 안함

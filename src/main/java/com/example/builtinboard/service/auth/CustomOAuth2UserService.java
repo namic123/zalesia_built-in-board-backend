@@ -25,6 +25,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        log.info("소셜 로그인 인증 성공, 유저 정보 로드 시작");
+
         // 리소스 서버에서 제공되는 유저 정보
         OAuth2User oAuth2User = super.loadUser(userRequest);
         log.info("제공된 유저 정보 :{} ", oAuth2User);

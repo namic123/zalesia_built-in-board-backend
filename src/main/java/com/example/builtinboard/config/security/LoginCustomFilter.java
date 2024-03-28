@@ -1,5 +1,6 @@
 package com.example.builtinboard.config.security;
 
+import com.example.builtinboard.service.auth.AuthenticationResponseService;
 import com.example.builtinboard.util.JWTUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
@@ -25,10 +26,13 @@ import java.util.Map;
 public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
+    private final AuthenticationResponseService authenticationResponseService;
 
-    public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+
+    public LoginCustomFilter(AuthenticationManager authenticationManager, JWTUtil jwtUtil,AuthenticationResponseService authenticationResponseService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+        this.authenticationResponseService = authenticationResponseService;
         // 커스텀 로그인 경로 설정
         setFilterProcessesUrl("/api/members/login");
     }
@@ -53,36 +57,14 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         // getPrincipal 메서드를 통해 현재 인증된 사용자의 세부 정보 추출
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authResult.getPrincipal();
-        // 인증된 id 및 권한 정보 추출
+
         String username = customMemberDetails.getUsername();
-        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
-        // 토큰 생성
-        String token = jwtUtil.createJwt(username, role,60 * 60 * 1000L);
-        // 응답 헤더에 Authoriztion 헤더를 추가 (Bearer 형식, token을 헤더에 담음)
-        response.addHeader("Authorization", "Bearer " + token);
+        String nickname = customMemberDetails.getNickname();
 
-        /* 로그인 정보 응답 */
-        // role 커스텀
-        String customRole = role;
-        if(customRole.equals("ADMIN")){
-            customRole = "운영자";
-        }else{
-            customRole = "일반 사용자";
-        }
+        // 권한 정보 추출 후 JWT 발급을 위한 클래스
+        authenticationResponseService.createAuthenticationResponse(response, authResult, username,nickname);
 
-        Map<String, String> responseData = new HashMap<>();
-        responseData.put("memberId", username);
-        responseData.put("role", customRole);
-        responseData.put("nickname", customMemberDetails.getNickname());
-
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-
-        new ObjectMapper().writeValue(response.getWriter(), responseData);
-        }
+    }
 
     // 로그인 검증 실패시, 실행 메서드
     @Override
