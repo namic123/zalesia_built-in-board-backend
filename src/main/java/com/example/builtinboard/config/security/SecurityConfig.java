@@ -1,6 +1,7 @@
 package com.example.builtinboard.config.security;
 
 import com.example.builtinboard.config.jwt.JWTFilter;
+import com.example.builtinboard.service.auth.CustomOAuth2UserService;
 import com.example.builtinboard.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -37,23 +38,37 @@ public class SecurityConfig {
     // AuthenticationManager가 인자로 받을 AuthenticationConfiguration 객체 생성자 주입
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,CustomOAuth2UserService customOAuth2UserService) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
+        this.customOAuth2UserService = customOAuth2UserService;
     }
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
+        // cors 설정
         httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                // csrf disable
-                .csrf((auth) -> auth.disable())
-                // Form 로그인 방식 disable
-                .formLogin((auth) -> auth.disable())
-                // http basic 인증 방식 disable
-                .httpBasic((auth) -> auth.disable())
-                // 경로별 인가 작업
+                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+        // csrf disable
+        httpSecurity
+                .csrf((auth) -> auth.disable());
+        // Form 로그인 방식 disable
+        httpSecurity
+                .formLogin((auth) -> auth.disable());
+        // http basic 인증 방식 disable
+        httpSecurity
+                .httpBasic((auth) -> auth.disable());
+        // OAuth2 로그인 과정에서 사용자 정보를 처리하기 위한 커스텀 서비스를 등록
+        httpSecurity
+                .oauth2Login((oauth2) -> oauth2
+                        // 엔드포인트 설정. 인증 후에 사용자 정보를 가져오는 방법을 정의
+                        .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
+                                // 인증 성공 후, 사용자 정보를 로드하고 처리하는 데 사용될 UserService의 구현체를 지정
+                                .userService(customOAuth2UserService)));
+        // 경로별 인가 작업
+        httpSecurity
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                                 // 경로별 인증 요구
@@ -61,13 +76,14 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.PUT, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .anyRequest().authenticated()
-                )
-
+                );
+        httpSecurity
                 // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginCustomFilter.class)
                 // 커스텀 필터로 필터링 (로그인 검증)
-                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
-                // 세션 사용 안함
+                .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+        // 세션 사용 안함
+        httpSecurity
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(STATELESS)
                 );
