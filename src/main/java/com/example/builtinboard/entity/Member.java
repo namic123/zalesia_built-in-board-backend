@@ -1,10 +1,10 @@
 package com.example.builtinboard.entity;
 
+import com.example.builtinboard.dto.BoardDTO;
+import com.example.builtinboard.dto.MemberDTO;
+import com.example.builtinboard.util.AppUtil;
 import jakarta.persistence.*;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -20,44 +20,39 @@ public class Member {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @Setter
     @Column(name = "name", nullable = false)
     private String name;
 
+    @Setter
     @Column(name = "memberId", nullable = false)
     private String memberId;
 
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Setter
     @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
+    @Setter
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "signup_date", nullable = false)
     private LocalDateTime signupDate;
 
+    @Setter
     @Enumerated(EnumType.STRING)
     @Column(name = "role")
     private Role role;
 
     @Builder
-    public Member(Long id, String name, String memberId, String password, String nickname, String email, Role role) {
+    public Member(Long id, String name, String memberId, String nickname, String email, Role role) {
         this.name = name;
         this.memberId = memberId;
-        this.password = password;
         this.nickname = nickname;
         this.email = email;
-        this.role = role;
-    }
-    public void setMemberId(String memberId) {this.memberId = memberId;}
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setRole(Role role){
         this.role = role;
     }
     public void passwordEncode(String password){
@@ -66,5 +61,17 @@ public class Member {
     @PrePersist
     public void prePersist() {
         this.signupDate = LocalDateTime.now();
+    }
+
+
+
+    public MemberDTO toDto(){
+        return MemberDTO.builder()
+                .memberId(memberId)
+                .name(name)
+                .nickname(nickname)
+                .role(role)
+                .email(email)
+                .build();
     }
 }

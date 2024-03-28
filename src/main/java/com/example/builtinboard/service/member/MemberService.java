@@ -20,7 +20,7 @@ public class MemberService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public boolean existsByNickname(String nickname) {
-        return memberRepository.findByNickname(nickname).isPresent();
+        return memberRepository.findByNickname(nickname) != null;
     }
 
     public boolean existsByMemberId(String memberId) {
@@ -28,7 +28,7 @@ public class MemberService {
     }
 
     public boolean existsByEmail(String email) {
-        return memberRepository.findByEmail(email).isPresent();
+        return memberRepository.findByEmail(email) != null;
     }
 
     public boolean createMember(MemberDTO memberDTO) {
