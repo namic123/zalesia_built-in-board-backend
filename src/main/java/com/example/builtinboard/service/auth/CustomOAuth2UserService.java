@@ -1,8 +1,7 @@
 package com.example.builtinboard.service.auth;
 
-import com.example.builtinboard.dto.GoogleResponse;
-import com.example.builtinboard.dto.NaverResponse;
-import com.example.builtinboard.dto.OAuth2Response;
+import com.example.builtinboard.dto.*;
+import com.example.builtinboard.entity.Role;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -36,6 +35,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return null;
         }
-        return null;
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setEmail(oAuth2Response.getEmail());
+        memberDTO.setNickname(oAuth2Response.getName());
+        memberDTO.setRole(Role.GENERAL_MEMBER);
+        return new CustomOAuth2User(memberDTO);
     }
 }
