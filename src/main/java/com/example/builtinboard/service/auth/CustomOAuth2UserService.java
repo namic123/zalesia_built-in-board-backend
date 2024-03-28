@@ -1,5 +1,6 @@
 package com.example.builtinboard.service.auth;
 
+import com.example.builtinboard.dto.GoogleResponse;
 import com.example.builtinboard.dto.NaverResponse;
 import com.example.builtinboard.dto.OAuth2Response;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -19,7 +20,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 리소스 제공 도메인 구분을 위한 registationId(구글 or 네이버)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+        // 리소스를 받을 OAuth2 DTO 인터페이스 초기화
         OAuth2Response oAuth2Response = null;
+
+        // 리소스 제공 도메인에 따라 데이터 할당
         if (registrationId.equals("naver")) {
 
             oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
@@ -32,6 +36,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return null;
         }
-
+        return null;
     }
 }
