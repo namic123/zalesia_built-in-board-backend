@@ -1,23 +1,19 @@
 package com.example.builtinboard.config.security;
 
 import com.example.builtinboard.config.jwt.JWTFilter;
+import com.example.builtinboard.config.oauth2.CustomSuccessHandler;
 import com.example.builtinboard.service.auth.CustomOAuth2UserService;
 import com.example.builtinboard.util.JWTUtil;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -25,7 +21,6 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
@@ -39,11 +34,13 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil,CustomOAuth2UserService customOAuth2UserService) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customOAuth2UserService = customOAuth2UserService;
+        this.customSuccessHandler = customSuccessHandler;
     }
 
     @Bean
@@ -66,7 +63,10 @@ public class SecurityConfig {
                         // 엔드포인트 설정. 인증 후에 사용자 정보를 가져오는 방법을 정의
                         .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                                 // 인증 성공 후, 사용자 정보를 로드하고 처리하는 데 사용될 UserService의 구현체를 지정
-                                .userService(customOAuth2UserService)));
+                                .userService(customOAuth2UserService))
+                        // 인증 성공 후, 실행될 클래스
+                        .successHandler(customSuccessHandler)
+                );
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((authorizeHttpRequests) ->

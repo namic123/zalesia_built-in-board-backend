@@ -2,6 +2,7 @@ package com.example.builtinboard.config.oauth2;
 
 import com.example.builtinboard.dto.CustomOAuth2User;
 import com.example.builtinboard.util.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -14,7 +15,9 @@ import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 // 인증 성공 후 실행되는 클래스
 @Component
@@ -40,19 +43,28 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String role = auth.getAuthority();
 
         String token = jwtUtil.createJwt(username, role, 60*60*60L);
-        response.addCookie(createCookie("Authorization", token));
+
+        response.addHeader("Authorization", "Bearer " + token);
         response.sendRedirect("http://localhost:8080/");
+
+        /* 로그인 정보 응답 */
+        // role 커스텀
+        String customRole = role;
+        if(customRole.equals("ADMIN")){
+            customRole = "운영자";
+        }else{
+            customRole = "일반 사용자";
+        }
+
+        Map<String, String> responseData = new HashMap<>();
+        responseData.put("memberId", username);
+        responseData.put("role", customRole);
+        responseData.put("nickname", customOAuth2User.getName());
+
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+
+        new ObjectMapper().writeValue(response.getWriter(), responseData);
     }
 
-    private Cookie createCookie(String key, String value){
-        // Authorization, token이 포함됨
-        Cookie cookie = new Cookie(key, value);
-        // 60시간 설정
-        cookie.setMaxAge(60*60*60);
-        // 쿠키 유효 경로, "/"는 모든 경로에서 쿠키가 유효함
-        cookie.setPath("/");
-        // HttpOnly로 설정, Javascript와 같은 클라이언트 사이드 스크립를 통해 쿠키 접근 불가
-        cookie.setHttpOnly(true);
-        return cookie;
-    }
 }
