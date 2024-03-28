@@ -69,7 +69,8 @@ public class SecurityConfig {
                 .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // 세션 사용 안함
                 .sessionManagement((sessionManagement) ->
-                        sessionManagement.sessionCreationPolicy(STATELESS));
+                        sessionManagement.sessionCreationPolicy(STATELESS)
+                );
         return httpSecurity.build();
     }
 
