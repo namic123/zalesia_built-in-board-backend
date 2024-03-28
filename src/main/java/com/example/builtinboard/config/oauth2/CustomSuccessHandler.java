@@ -31,7 +31,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         System.out.println("authentication.getPrincipal() = " + authentication.getPrincipal());
-        String email = customOAuth2User.getEmail();
+        String username = customOAuth2User.getUsername();
 
         // 권한 로드
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
@@ -39,7 +39,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
 
-        String token = jwtUtil.createJwt(email, role, 60*60*60L);
+        String token = jwtUtil.createJwt(username, role, 60*60*60L);
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("http://localhost:8080/");
     }
