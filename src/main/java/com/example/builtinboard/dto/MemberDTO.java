@@ -20,7 +20,7 @@ public class MemberDTO {
     private Role role;
 
     @Builder
-    public MemberDTO(String name, String memberId, String password, String nickname, String email, Role role) {
+    public MemberDTO(Long id, String name, String memberId, String password, String nickname, String email, Role role) {
         this.id = id;
         this.name = name;
         this.memberId = memberId;

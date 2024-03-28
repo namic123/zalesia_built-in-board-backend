@@ -7,6 +7,7 @@ import com.example.builtinboard.util.JWTUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -14,6 +15,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.OAuth2LoginAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -34,9 +36,9 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
     private final JWTUtil jwtUtil;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private CustomSuccessHandler customSuccessHandler;
+    private final CustomSuccessHandler customSuccessHandler;
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil, @Lazy CustomOAuth2UserService customOAuth2UserService, CustomSuccessHandler customSuccessHandler) {
         this.authenticationConfiguration = authenticationConfiguration;
         this.jwtUtil = jwtUtil;
         this.customOAuth2UserService = customOAuth2UserService;
@@ -48,15 +50,19 @@ public class SecurityConfig {
         // cors 설정
         httpSecurity
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+
         // csrf disable
         httpSecurity
                 .csrf((auth) -> auth.disable());
+
         // Form 로그인 방식 disable
         httpSecurity
                 .formLogin((auth) -> auth.disable());
+
         // http basic 인증 방식 disable
         httpSecurity
                 .httpBasic((auth) -> auth.disable());
+
         // OAuth2 로그인 과정에서 사용자 정보를 처리하기 위한 커스텀 서비스를 등록
         httpSecurity
                 .oauth2Login((oauth2) -> oauth2
@@ -66,7 +72,9 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         // 인증 성공 후, 실행될 클래스
                         .successHandler(customSuccessHandler)
+
                 );
+
         // 경로별 인가 작업
         httpSecurity
                 .authorizeHttpRequests((authorizeHttpRequests) ->
@@ -77,16 +85,21 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.DELETE, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .anyRequest().authenticated()
                 );
+        // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행
         httpSecurity
-                // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행
-                .addFilterBefore(new JWTFilter(jwtUtil), LoginCustomFilter.class)
+                .addFilterBefore(new JWTFilter(jwtUtil), LoginCustomFilter.class);
+
+        httpSecurity
                 // 커스텀 필터로 필터링 (로그인 검증)
                 .addFilterAt(new LoginCustomFilter(authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+
         // 세션 사용 안함
         httpSecurity
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(STATELESS)
                 );
+
         return httpSecurity.build();
     }
 

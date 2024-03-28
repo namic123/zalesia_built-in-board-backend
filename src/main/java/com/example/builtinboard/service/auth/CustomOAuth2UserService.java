@@ -4,6 +4,7 @@ import com.example.builtinboard.dto.*;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
@@ -12,6 +13,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Service
+@Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -25,11 +27,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         // 리소스 서버에서 제공되는 유저 정보
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
-        System.out.println(oAuth2User);
+        log.info("제공된 유저 정보 :{} ", oAuth2User);
 
         // 리소스 제공 도메인 구분을 위한 registationId(구글 or 네이버)
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        log.info("요청 도메인 :{}", registrationId);
         // 리소스를 받을 OAuth2 DTO 인터페이스 초기화
         OAuth2Response oAuth2Response = null;
 
