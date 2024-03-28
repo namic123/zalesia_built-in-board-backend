@@ -1,4 +1,4 @@
-package com.example.builtinboard.domain;
+package com.example.builtinboard.dto;
 
 import com.example.builtinboard.entity.BoardFile;
 import lombok.Builder;

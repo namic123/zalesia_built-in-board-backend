@@ -1,12 +1,11 @@
 package com.example.builtinboard.controller.member;
 
-import com.example.builtinboard.domain.MemberDTO;
+import com.example.builtinboard.dto.MemberDTO;
 import com.example.builtinboard.service.member.MemberService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 

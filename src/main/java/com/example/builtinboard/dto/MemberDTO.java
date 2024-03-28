@@ -1,10 +1,8 @@
-package com.example.builtinboard.domain;
+package com.example.builtinboard.dto;
 
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
-import jakarta.persistence.Column;
 import lombok.Builder;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

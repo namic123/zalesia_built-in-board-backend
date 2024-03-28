@@ -1,13 +1,11 @@
-package com.example.builtinboard.domain;
+package com.example.builtinboard.dto;
 
 import com.example.builtinboard.entity.Board;
-import com.example.builtinboard.util.AppUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 

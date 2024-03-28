@@ -1,7 +1,7 @@
 package com.example.builtinboard.service.board;
 
-import com.example.builtinboard.domain.BoardDTO;
-import com.example.builtinboard.domain.BoardFileDTO;
+import com.example.builtinboard.dto.BoardDTO;
+import com.example.builtinboard.dto.BoardFileDTO;
 import com.example.builtinboard.entity.Board;
 import com.example.builtinboard.entity.BoardFile;
 import com.example.builtinboard.repository.board.BoardFileRepository;
@@ -23,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;

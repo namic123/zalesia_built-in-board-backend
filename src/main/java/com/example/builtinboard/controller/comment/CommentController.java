@@ -1,7 +1,6 @@
 package com.example.builtinboard.controller.comment;
 
-import com.example.builtinboard.domain.CommentDto;
-import com.example.builtinboard.entity.Board;
+import com.example.builtinboard.dto.CommentDto;
 import com.example.builtinboard.entity.Comment;
 import com.example.builtinboard.service.comment.CommentService;
 import lombok.RequiredArgsConstructor;

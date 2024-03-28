@@ -1,6 +1,6 @@
 package com.example.builtinboard.controller.board;
 
-import com.example.builtinboard.domain.BoardDTO;
+import com.example.builtinboard.dto.BoardDTO;
 import com.example.builtinboard.entity.Board;
 import com.example.builtinboard.service.board.BoardService;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

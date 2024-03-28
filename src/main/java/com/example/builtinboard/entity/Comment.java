@@ -1,6 +1,5 @@
 package com.example.builtinboard.entity;
 
-import com.example.builtinboard.domain.CommentDto;
 import com.example.builtinboard.util.AppUtil;
 import jakarta.persistence.*;
 import lombok.Builder;

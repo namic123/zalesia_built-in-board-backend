@@ -1,6 +1,6 @@
 package com.example.builtinboard.entity;
 
-import com.example.builtinboard.domain.BoardDTO;
+import com.example.builtinboard.dto.BoardDTO;
 import com.example.builtinboard.util.AppUtil;
 import jakarta.persistence.*;
 import lombok.Builder;
