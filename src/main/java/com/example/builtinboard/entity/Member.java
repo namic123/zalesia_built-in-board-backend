@@ -28,7 +28,6 @@ public class Member {
     @Column(name = "memberId", nullable = false)
     private String memberId;
 
-    @Setter
     @Column(name = "password", nullable = false)
     private String password;
 

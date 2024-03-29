@@ -6,6 +6,7 @@ import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
 import com.example.builtinboard.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -49,14 +50,18 @@ public class MemberService {
         }
     }
 
-    public Member getMemberInfo(HttpServletRequest request) {
+    public MemberDTO getMemberInfo(HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         if(token != null){
             String username = jwtUtil.getUsername(token);
-            Member member = memberRepository.findByMemberId(username);
-            member.setPassword("");
+            MemberDTO member = memberRepository.findByMemberId(username).toDto();
+
             return member;
         }    
         return null;
+    }
+
+    public boolean logout(HttpServletRequest request, HttpServletResponse response) {
+        return jwtUtil.resolveExpiredJwtCookie(request,response);
     }
 }

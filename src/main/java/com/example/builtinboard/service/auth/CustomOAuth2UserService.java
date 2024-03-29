@@ -12,6 +12,8 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
@@ -53,27 +55,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
 
         Member existData = memberRepository.findByEmail(oAuth2Response.getEmail());
-        String memberId = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
-        String name = oAuth2Response.getName();
-        String email = oAuth2Response.getEmail();
 
         // 존재하지 않는 회원일 경우
         if(existData == null){
+            String memberId = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+            String name = oAuth2Response.getName();
+            String email = oAuth2Response.getEmail();
+
             Member member = new Member();
             member.setMemberId(memberId);
-            member.passwordEncode( bCryptPasswordEncoder.encode("socialPassword123123!"));
             member.setEmail(email);
+            UUID uuid = UUID.randomUUID();
+            member.passwordEncode( bCryptPasswordEncoder.encode(uuid.toString()));
+            member.setName(name);
             member.setNickname(name);
             member.setRole(Role.GENERAL_MEMBER);
 
             memberRepository.save(member);
-        }
-        // 존재하는 회원인 경우
-        else{
-            existData.setEmail(email);
-            existData.setNickname(name);
-
-            memberRepository.save(existData);
+            return new CustomOAuth2User(member.toDto());
         }
 
         return new CustomOAuth2User(existData.toDto());

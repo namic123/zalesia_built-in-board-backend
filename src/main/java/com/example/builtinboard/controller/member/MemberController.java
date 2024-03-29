@@ -4,6 +4,7 @@ import com.example.builtinboard.dto.MemberDTO;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.service.member.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -53,7 +54,14 @@ public class MemberController {
     }
 
     @GetMapping("/validation")
-    public ResponseEntity<Member> getMemberInfo(HttpServletRequest request){
+    public ResponseEntity<MemberDTO> getMemberInfo(HttpServletRequest request){
         return ResponseEntity.ok(memberService.getMemberInfo(request));
+    }
+    @PostMapping("/logout")
+    public ResponseEntity<HttpStatus> logout(HttpServletRequest request, HttpServletResponse response){
+        if(memberService.logout(request, response)){
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.internalServerError().build();
     }
 }

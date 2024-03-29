@@ -40,7 +40,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         String username = customOAuth2User.getUsername();
 
         authenticationResponseService.createAuthenticationResponse(response,authentication,username);
-        response.sendRedirect("http://localhost:8080/boards");
+        response.sendRedirect("http://localhost:8080/member/login/validation");
     }
 
 }

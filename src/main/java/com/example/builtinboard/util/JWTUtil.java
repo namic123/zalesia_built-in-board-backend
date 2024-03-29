@@ -82,11 +82,13 @@ public class JWTUtil {
         String authorization = null;
         Cookie[] cookies = request.getCookies();
         log.info("Cookie 탐색 시작");
+        if(cookies != null){
         for (Cookie cookie : cookies) {
             log.info("추출된 Cookie :{} ", cookie.getName());
             if (cookie.getName().equals("Authorization")) {
                 authorization = cookie.getValue();
             }
+        }
         }
         log.info("추출된 토큰 정보:{}", authorization);
 
@@ -122,22 +124,21 @@ public class JWTUtil {
         return false;
     }
 
-    // 만료된 Jwt 쿠키 추출
+    // 쿠키 삭제를 위한 JwtCookie 탐색
     public boolean resolveExpiredJwtCookie(HttpServletRequest request, HttpServletResponse response) {
         Cookie[] cookies = request.getCookies();
-
         if (cookies != null) {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("Authorization")) {
                     expireJwtCookie(response, "Authorization");
+                    return true;
                 }
             }
-            return true;
         }
         return false;
     }
 
-    // 만료된 Jwt 쿠키 삭제
+    // Jwt 쿠키 삭제
     public void expireJwtCookie(HttpServletResponse response, String cookieName) {
         Cookie cookie = new Cookie(cookieName, null);
         cookie.setHttpOnly(true);

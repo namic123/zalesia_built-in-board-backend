@@ -74,7 +74,6 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         // 인증 성공 후, 실행될 클래스
                         .successHandler(customSuccessHandler)
-
                 );
 
         // 경로별 인가 작업
@@ -85,6 +84,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/api/boards").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .requestMatchers(HttpMethod.PUT, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .requestMatchers(HttpMethod.DELETE, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.GET, "/api/members/validation").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.POST, "/api/members/logout").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .anyRequest().authenticated()
                 );
         // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행
