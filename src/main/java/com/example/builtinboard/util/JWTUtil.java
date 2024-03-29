@@ -3,6 +3,7 @@ package com.example.builtinboard.util;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,13 +77,19 @@ public class JWTUtil {
 
     // 헤더에서 토큰 정보 추출
     public String resolveToken(HttpServletRequest request){
-        String bearerToken = request.getHeader("Authorization");
-        log.info("토큰 정보 추출 :{}", bearerToken);
-        if(StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer")){
-            // Bearer를 제외한 토큰 추출
-            return bearerToken.substring(7);
+        // Authorization key에 담긴 쿠키를 탐색
+        String authorization = null;
+        Cookie[] cookies = request.getCookies();
+        log.info("Cookie 탐색 시작");
+        for(Cookie cookie : cookies){
+            log.info("추출된 Cookie :{} ", cookie.getName());
+            if(cookie.getName().equals("Authorization")){
+                authorization = cookie.getValue();
+            }
         }
-        return null;
+        log.info("추출된 토큰 정보:{}", authorization);
+
+        return authorization;
     }
 
     // 토큰 정보 검증 메서드

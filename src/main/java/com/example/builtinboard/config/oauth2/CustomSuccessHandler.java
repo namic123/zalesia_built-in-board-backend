@@ -38,11 +38,9 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
         String username = customOAuth2User.getUsername();
-        String nickname = customOAuth2User.getName();
 
+        authenticationResponseService.createAuthenticationResponse(response,authentication,username);
         response.sendRedirect("http://localhost:8080/boards");
-        authenticationResponseService.createAuthenticationResponse(response, authentication, username,nickname);
-
     }
 
 }
