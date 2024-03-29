@@ -4,6 +4,8 @@ import com.example.builtinboard.dto.MemberDTO;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
+import com.example.builtinboard.util.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final JWTUtil jwtUtil;
+
 
     public boolean existsByNickname(String nickname) {
         return memberRepository.findByNickname(nickname) != null;
@@ -45,4 +49,14 @@ public class MemberService {
         }
     }
 
+    public Member getMemberInfo(HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        if(token != null){
+            String username = jwtUtil.getUsername(token);
+            Member member = memberRepository.findByMemberId(username);
+            member.setPassword("");
+            return member;
+        }    
+        return null;
+    }
 }
