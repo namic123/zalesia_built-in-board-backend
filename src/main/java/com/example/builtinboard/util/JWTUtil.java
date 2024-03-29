@@ -5,6 +5,7 @@ import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -76,14 +77,14 @@ public class JWTUtil {
     }
 
     // 헤더에서 토큰 정보 추출
-    public String resolveToken(HttpServletRequest request){
+    public String resolveToken(HttpServletRequest request) {
         // Authorization key에 담긴 쿠키를 탐색
         String authorization = null;
         Cookie[] cookies = request.getCookies();
         log.info("Cookie 탐색 시작");
-        for(Cookie cookie : cookies){
+        for (Cookie cookie : cookies) {
             log.info("추출된 Cookie :{} ", cookie.getName());
-            if(cookie.getName().equals("Authorization")){
+            if (cookie.getName().equals("Authorization")) {
                 authorization = cookie.getValue();
             }
         }
@@ -93,7 +94,7 @@ public class JWTUtil {
     }
 
     // 토큰 정보 검증 메서드
-    public boolean validateToken(String token){
+    public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder()
                     .setSigningKey(key)
@@ -102,21 +103,47 @@ public class JWTUtil {
             return true;
         }
         // 보안 위반 예외 | JWT 형식 오류
-        catch (SecurityException | MalformedJwtException e){
+        catch (SecurityException | MalformedJwtException e) {
             log.info("유효하지 않은 토큰 ", e);
         }
         // 토큰 만료
-        catch (ExpiredJwtException e){
+        catch (ExpiredJwtException e) {
             log.info("만료된 토큰 ", e);
+
         }
         // 지원되지 않은 토큰
-        catch (UnsupportedJwtException e){
+        catch (UnsupportedJwtException e) {
             log.info("지원하지 않는 토큰 ", e);
         }
         // 적합하지 않은 인자
-        catch (IllegalArgumentException e){
+        catch (IllegalArgumentException e) {
             log.info("JWT 클레임이 비었습니다 ", e);
         }
         return false;
+    }
+
+    // 만료된 Jwt 쿠키 추출
+    public boolean resolveExpiredJwtCookie(HttpServletRequest request, HttpServletResponse response) {
+        Cookie[] cookies = request.getCookies();
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("Authorization")) {
+                    expireJwtCookie(response, "Authorization");
+                }
+            }
+            return true;
         }
+        return false;
+    }
+
+    // 만료된 Jwt 쿠키 삭제
+    public void expireJwtCookie(HttpServletResponse response, String cookieName) {
+        Cookie cookie = new Cookie(cookieName, null);
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
 }

@@ -51,6 +51,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
 
                  }else{
+                     jwtUtil.resolveExpiredJwtCookie(request,response);
                      response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                      return;
                  }
