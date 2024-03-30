@@ -1,4 +1,4 @@
-package com.example.builtinboard.dto;
+package com.example.builtinboard.dto.oauth2;
 
 import java.util.Map;
 

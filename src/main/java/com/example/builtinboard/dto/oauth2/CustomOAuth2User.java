@@ -1,5 +1,6 @@
-package com.example.builtinboard.dto;
+package com.example.builtinboard.dto.oauth2;
 
+import com.example.builtinboard.dto.MemberDTO;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 

@@ -1,6 +1,6 @@
 package com.example.builtinboard.config.oauth2;
 
-import com.example.builtinboard.dto.CustomOAuth2User;
+import com.example.builtinboard.dto.oauth2.CustomOAuth2User;
 import com.example.builtinboard.service.auth.AuthenticationResponseService;
 import com.example.builtinboard.util.JWTUtil;
 import jakarta.servlet.ServletException;

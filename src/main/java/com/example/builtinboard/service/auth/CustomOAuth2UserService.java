@@ -1,6 +1,9 @@
 package com.example.builtinboard.service.auth;
 
-import com.example.builtinboard.dto.*;
+import com.example.builtinboard.dto.oauth2.CustomOAuth2User;
+import com.example.builtinboard.dto.oauth2.GoogleResponse;
+import com.example.builtinboard.dto.oauth2.NaverResponse;
+import com.example.builtinboard.dto.oauth2.OAuth2Response;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;

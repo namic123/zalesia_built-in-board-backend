@@ -1,8 +1,8 @@
-package com.example.builtinboard.dto;
+package com.example.builtinboard.dto.oauth2;
 
 import java.util.Map;
 
-public class NaverResponse implements OAuth2Response{
+public class NaverResponse implements OAuth2Response {
 
 //    {
 //        resultcode=00, message=success, response={id=123123123, name=박재성}

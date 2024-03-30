@@ -1,4 +1,4 @@
-package com.example.builtinboard.dto;
+package com.example.builtinboard.dto.oauth2;
 
 // 소셜 Response에 대한 DTO의 일관성을 위한 인터페이스
 public interface OAuth2Response {
