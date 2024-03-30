@@ -42,15 +42,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("요청 도메인 :{}", registrationId);
         // 리소스를 받을 OAuth2 DTO 인터페이스 초기화
         OAuth2Response oAuth2Response = null;
-        String accessToken = userRequest.getAccessToken().getTokenValue();
+        String accessToken = "";
 
         // 리소스 제공 도메인에 따라 데이터 할당
         if (registrationId.equals("naver")) {
-
+            accessToken = "naver" +  userRequest.getAccessToken().getTokenValue();
             oAuth2Response = new NaverResponse( oAuth2User.getAttributes());
         }
         else if (registrationId.equals("google")) {
-
+            accessToken = "google" +  userRequest.getAccessToken().getTokenValue();
             oAuth2Response = new GoogleResponse( oAuth2User.getAttributes());
         }
         else {

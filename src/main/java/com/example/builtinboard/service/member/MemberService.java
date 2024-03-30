@@ -1,6 +1,7 @@
 package com.example.builtinboard.service.member;
 
 import com.example.builtinboard.dto.MemberDTO;
+import com.example.builtinboard.dto.oauth2.OAuth2UnlinkManager;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
@@ -25,6 +26,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final JWTUtil jwtUtil;
+    private final OAuth2UnlinkManager oAuth2UnlinkManager;
 
 
     public boolean existsByNickname(String nickname) {
@@ -54,25 +56,28 @@ public class MemberService {
     }
 
     public Map<String,Object> getMemberInfo(HttpServletRequest request) {
-        Map<String, Object> auth = jwtUtil.resolveToken(request);
+        Map<String, String> auth = jwtUtil.resolveToken(request);
         Map<String, Object> memberInfo = new HashMap<>();
 
-        String token = auth.get("authorization").toString();
-        String OAuthToken = auth.get("oauth2AccessToken").toString();
+        String token = auth.get("authorization");
 
         if(token != null){
             String username = jwtUtil.getUsername(token);
             MemberDTO member = memberRepository.findByMemberId(username).toDto();
             memberInfo.put("member", member);
-            if(OAuthToken != null){
-                memberInfo.put("oauth2AccessToken",OAuthToken);
-            }
             return memberInfo;
         }    
         return null;
     }
 
     public boolean logout(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, String> tokens = jwtUtil.resolveToken(request);
+        log.info("로그아웃 토큰, Contains Authorization? :{}", tokens.get("authorization"));
+        log.info("로그아웃 토큰, Contains _OAuth2? :{}", tokens.get("oauth2AccessToken"));
+        if(tokens.containsKey("oauth2AccessToken")){
+            String token = tokens.get("oauth2AccessToken");
+            oAuth2UnlinkManager.unlink(token);
+        }
         return jwtUtil.resolveExpiredJwtCookie(request,response);
     }
 }

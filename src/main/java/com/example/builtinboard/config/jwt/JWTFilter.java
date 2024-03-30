@@ -29,8 +29,8 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println(request.getRequestURI());
         // Request header에서 Authorization 헤더를 찾고, token 반환
-        Map<String, Object> auth = jwtUtil.resolveToken(request);
-        String token = auth.get("authorization").toString();
+        Map<String, String> auth = jwtUtil.resolveToken(request);
+        String token = auth.get("authorization");
         if(token != null){
              logger.info("Authorization 검증 시작");
                  if (jwtUtil.validateToken(token)) {

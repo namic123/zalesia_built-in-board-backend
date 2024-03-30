@@ -3,6 +3,7 @@ package com.example.builtinboard.controller.member;
 import com.example.builtinboard.dto.MemberDTO;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.service.member.MemberService;
+import com.example.builtinboard.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

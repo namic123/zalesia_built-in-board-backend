@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
@@ -79,21 +78,21 @@ public class JWTUtil {
     }
 
     // 헤더에서 토큰 정보 추출
-    public Map<String, Object> resolveToken(HttpServletRequest request) {
-        Map<String, Object> auth = new HashMap<>();
+    public Map<String, String> resolveToken(HttpServletRequest request) {
+        Map<String, String> auth = new HashMap<>();
         // Authorization key에 담긴 쿠키를 탐색
         Cookie[] cookies = request.getCookies();
-        log.info("Cookie 탐색 시작");
-        if(cookies != null){
-        for (Cookie cookie : cookies) {
-            log.info("추출된 Cookie :{} ", cookie.getName());
-            if (cookie.getName().equals("Authorization")) {
-                auth.put("authorization", cookie.getValue());
+        if (cookies != null) {
+            log.info("Cookie 탐색 시작");
+            for (Cookie cookie : cookies) {
+                log.info("추출된 Cookie :{} ", cookie.getName());
+                if (cookie.getName().equals("Authorization")) {
+                    auth.put("authorization", cookie.getValue());
+                }
+                if (cookie.getName().equals("_OAuth2")) {
+                    auth.put("oauth2AccessToken", cookie.getValue());
+                }
             }
-            if (cookie.getName().equals("_OAuth2")) {
-                auth.put("oauth2AccessToken", cookie.getValue());
-            }
-        }
         }
 
         return auth;
@@ -135,9 +134,12 @@ public class JWTUtil {
             for (Cookie cookie : cookies) {
                 if (cookie.getName().equals("Authorization")) {
                     expireJwtCookie(response, "Authorization");
-                    return true;
+                }
+                if (cookie.getName().equals("_OAuth2")) {
+                    expireJwtCookie(response, "_OAuth2");
                 }
             }
+            return true;
         }
         return false;
     }
