@@ -74,6 +74,7 @@ public class SecurityConfig {
                                 .userService(customOAuth2UserService))
                         // 인증 성공 후, 실행될 클래스
                         .successHandler(customSuccessHandler)
+
                 );
 
         // 경로별 인가 작업
@@ -127,7 +128,8 @@ public class SecurityConfig {
         corsConfiguration.setAllowCredentials(true);
         corsConfiguration.setMaxAge(3600L);
 
-        corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
+//        corsConfiguration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
+//        corsConfiguration.setExposedHeaders(Collections.singletonList("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration); // 모든 경로에 허용

@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Map;
+
 // HTTP 요청에 대해 한 번씩 실행되며, JWT 토큰 검증 및 유효성 확인 후, SecurityContext에 인증 정보를 설정
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
@@ -27,7 +29,8 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println(request.getRequestURI());
         // Request header에서 Authorization 헤더를 찾고, token 반환
-        String token = jwtUtil.resolveToken(request);
+        Map<String, Object> auth = jwtUtil.resolveToken(request);
+        String token = auth.get("authorization").toString();
         if(token != null){
              logger.info("Authorization 검증 시작");
                  if (jwtUtil.validateToken(token)) {

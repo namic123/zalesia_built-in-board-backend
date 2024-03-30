@@ -54,7 +54,7 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         String username = customMemberDetails.getUsername();
         System.out.println("username = " + username);
         // 권한 정보 추출 후 JWT 발급을 위한 클래스
-        authenticationResponseService.createAuthenticationResponse(response, authResult, username);
+        authenticationResponseService.createAuthenticationResponse(response, authResult, username, null);
 
     }
 
