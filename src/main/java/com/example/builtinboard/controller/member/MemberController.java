@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/members")
@@ -54,7 +56,7 @@ public class MemberController {
     }
 
     @GetMapping("/validation")
-    public ResponseEntity<MemberDTO> getMemberInfo(HttpServletRequest request){
+    public ResponseEntity<Map<String, Object>> getMemberInfo(HttpServletRequest request){
         return ResponseEntity.ok(memberService.getMemberInfo(request));
     }
     @PostMapping("/logout")

@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /* JWT 생성, 파싱하여 사용자의 인증 정보(사용자ID, 역할, 토큰 만료여부)를 추출 */
@@ -77,22 +79,24 @@ public class JWTUtil {
     }
 
     // 헤더에서 토큰 정보 추출
-    public String resolveToken(HttpServletRequest request) {
+    public Map<String, Object> resolveToken(HttpServletRequest request) {
+        Map<String, Object> auth = new HashMap<>();
         // Authorization key에 담긴 쿠키를 탐색
-        String authorization = null;
         Cookie[] cookies = request.getCookies();
         log.info("Cookie 탐색 시작");
         if(cookies != null){
         for (Cookie cookie : cookies) {
             log.info("추출된 Cookie :{} ", cookie.getName());
             if (cookie.getName().equals("Authorization")) {
-                authorization = cookie.getValue();
+                auth.put("authorization", cookie.getValue());
+            }
+            if (cookie.getName().equals("_OAuth2")) {
+                auth.put("oauth2AccessToken", cookie.getValue());
             }
         }
         }
-        log.info("추출된 토큰 정보:{}", authorization);
 
-        return authorization;
+        return auth;
     }
 
     // 토큰 정보 검증 메서드

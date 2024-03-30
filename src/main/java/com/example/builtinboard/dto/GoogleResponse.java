@@ -3,13 +3,16 @@ package com.example.builtinboard.dto;
 import java.util.Map;
 
 public class GoogleResponse implements OAuth2Response {
+
+
     // 구글 데이터 형식
 //    {
 //        resultcode=00, message=success, id=123123123, name=재성
 //    }
     private final Map<String, Object> attribute;
 
-    public GoogleResponse(Map<String, Object> attribute) {
+
+    public GoogleResponse( Map<String, Object> attribute) {
 
         this.attribute = attribute;
     }

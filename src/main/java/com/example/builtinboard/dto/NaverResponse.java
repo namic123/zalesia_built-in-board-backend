@@ -10,7 +10,7 @@ public class NaverResponse implements OAuth2Response{
 // 네이버 데이터가 위 JSON 형식으로 응답하므로, Map형식으로 받음
     private final Map<String, Object> attribute;
 
-    public NaverResponse(Map<String, Object> attribute) {
+    public NaverResponse( Map<String, Object> attribute) {
         this.attribute = (Map<String, Object>) attribute.get("response");
     }
 
@@ -33,4 +33,5 @@ public class NaverResponse implements OAuth2Response{
     public String getName() {
         return attribute.get("name").toString();
     }
+
 }

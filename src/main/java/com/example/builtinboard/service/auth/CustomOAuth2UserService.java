@@ -39,15 +39,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         log.info("요청 도메인 :{}", registrationId);
         // 리소스를 받을 OAuth2 DTO 인터페이스 초기화
         OAuth2Response oAuth2Response = null;
+        String accessToken = userRequest.getAccessToken().getTokenValue();
 
         // 리소스 제공 도메인에 따라 데이터 할당
         if (registrationId.equals("naver")) {
 
-            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+            oAuth2Response = new NaverResponse( oAuth2User.getAttributes());
         }
         else if (registrationId.equals("google")) {
 
-            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+            oAuth2Response = new GoogleResponse( oAuth2User.getAttributes());
         }
         else {
 
@@ -72,9 +73,9 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             member.setRole(Role.GENERAL_MEMBER);
 
             memberRepository.save(member);
-            return new CustomOAuth2User(member.toDto());
+            return new CustomOAuth2User(member.toDto(), accessToken);
         }
 
-        return new CustomOAuth2User(existData.toDto());
+        return new CustomOAuth2User(existData.toDto() , accessToken);
     }
 }

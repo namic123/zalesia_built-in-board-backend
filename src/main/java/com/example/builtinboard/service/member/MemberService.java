@@ -14,6 +14,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -50,13 +53,21 @@ public class MemberService {
         }
     }
 
-    public MemberDTO getMemberInfo(HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
+    public Map<String,Object> getMemberInfo(HttpServletRequest request) {
+        Map<String, Object> auth = jwtUtil.resolveToken(request);
+        Map<String, Object> memberInfo = new HashMap<>();
+
+        String token = auth.get("authorization").toString();
+        String OAuthToken = auth.get("oauth2AccessToken").toString();
+
         if(token != null){
             String username = jwtUtil.getUsername(token);
             MemberDTO member = memberRepository.findByMemberId(username).toDto();
-
-            return member;
+            memberInfo.put("member", member);
+            if(OAuthToken != null){
+                memberInfo.put("oauth2AccessToken",OAuthToken);
+            }
+            return memberInfo;
         }    
         return null;
     }

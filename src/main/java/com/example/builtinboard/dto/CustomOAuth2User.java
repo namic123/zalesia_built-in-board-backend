@@ -11,9 +11,11 @@ import java.util.Map;
 // 소셜 로그인 Provider로부터 반환된 사용자 속성 정보를 담고 있다.
 public class CustomOAuth2User implements OAuth2User {
     private final MemberDTO memberDTO;
+    private final String accessToken;
 
-    public CustomOAuth2User(MemberDTO memberDTO) {
+    public CustomOAuth2User(MemberDTO memberDTO, String accessToken) {
         this.memberDTO = memberDTO;
+        this.accessToken = accessToken;
     }
 
     @Override
@@ -42,4 +44,9 @@ public class CustomOAuth2User implements OAuth2User {
 
         return memberDTO.getMemberId();
     }
+
+    public String getAccessToken(){
+        return this.accessToken;
+    }
+
 }
