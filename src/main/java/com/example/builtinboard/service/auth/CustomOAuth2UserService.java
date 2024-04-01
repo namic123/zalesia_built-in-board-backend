@@ -49,10 +49,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             accessToken = "google" + userRequest.getAccessToken().getTokenValue();
             oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
         } else if (registrationId.equals("kakao")) {
-            System.out.println("            oAuth2User.getAttributes().get(\"kakao_account\");\n = " + oAuth2User.getAttributes().get("kakao_account")
-            );
             accessToken = "kakao" + userRequest.getAccessToken().getTokenValue();
             oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        } else if (registrationId.equals("github")) {
+            accessToken = "github" + userRequest.getAccessToken().getTokenValue();
+            oAuth2Response = new GithubResponse(oAuth2User.getAttributes());
         } else {
 
             return null;
