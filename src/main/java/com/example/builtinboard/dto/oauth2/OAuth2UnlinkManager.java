@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 public class OAuth2UnlinkManager {
     private final GoogleOAuth2Unlink googleOAuth2Unlink;
     private final NaverOAuth2Unlink naverOAuth2Unlink;
+    private final KakaoOAuth2Unlink kakaoOAuth2Unlink;
 
     public void unlink(String accessToken){
         if(accessToken.startsWith("google")){
@@ -23,7 +24,12 @@ public class OAuth2UnlinkManager {
             accessToken = accessToken.substring(5);
             log.info("네이버 소셜 로그아웃 시도 :{}", accessToken);
             naverOAuth2Unlink.unlink(accessToken);
-        }else{
+        }else if (accessToken.startsWith("kakao")) {
+            accessToken = accessToken.substring(5);
+            log.info("카카오 소셜 로그아웃 시도 :{}", accessToken);
+            kakaoOAuth2Unlink.unlink(accessToken);
+        }
+        else{
             throw new OAuth2AuthenticationException(
                     "Unlink with " + accessToken.substring(0,6) + "is not supported"
             );

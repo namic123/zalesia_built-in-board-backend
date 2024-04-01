@@ -1,9 +1,6 @@
 package com.example.builtinboard.service.auth;
 
-import com.example.builtinboard.dto.oauth2.CustomOAuth2User;
-import com.example.builtinboard.dto.oauth2.GoogleResponse;
-import com.example.builtinboard.dto.oauth2.NaverResponse;
-import com.example.builtinboard.dto.oauth2.OAuth2Response;
+import com.example.builtinboard.dto.oauth2.*;
 import com.example.builtinboard.entity.Member;
 import com.example.builtinboard.entity.Role;
 import com.example.builtinboard.repository.member.MemberRepository;
@@ -46,14 +43,17 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         // 리소스 제공 도메인에 따라 데이터 할당
         if (registrationId.equals("naver")) {
-            accessToken = "naver" +  userRequest.getAccessToken().getTokenValue();
-            oAuth2Response = new NaverResponse( oAuth2User.getAttributes());
-        }
-        else if (registrationId.equals("google")) {
-            accessToken = "google" +  userRequest.getAccessToken().getTokenValue();
-            oAuth2Response = new GoogleResponse( oAuth2User.getAttributes());
-        }
-        else {
+            accessToken = "naver" + userRequest.getAccessToken().getTokenValue();
+            oAuth2Response = new NaverResponse(oAuth2User.getAttributes());
+        } else if (registrationId.equals("google")) {
+            accessToken = "google" + userRequest.getAccessToken().getTokenValue();
+            oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
+        } else if (registrationId.equals("kakao")) {
+            System.out.println("            oAuth2User.getAttributes().get(\"kakao_account\");\n = " + oAuth2User.getAttributes().get("kakao_account")
+            );
+            accessToken = "kakao" + userRequest.getAccessToken().getTokenValue();
+            oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
+        } else {
 
             return null;
         }
@@ -61,8 +61,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         Member existData = memberRepository.findByEmail(oAuth2Response.getEmail());
 
         // 존재하지 않는 회원일 경우
-        if(existData == null){
-            String memberId = oAuth2Response.getProvider()+" "+oAuth2Response.getProviderId();
+        if (existData == null) {
+            String memberId = oAuth2Response.getProvider() + " " + oAuth2Response.getProviderId();
             String name = oAuth2Response.getName();
             String email = oAuth2Response.getEmail();
 
@@ -70,7 +70,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             member.setMemberId(memberId);
             member.setEmail(email);
             UUID uuid = UUID.randomUUID();
-            member.passwordEncode( bCryptPasswordEncoder.encode(uuid.toString()));
+            member.passwordEncode(bCryptPasswordEncoder.encode(uuid.toString()));
             member.setName(name);
             member.setNickname(name);
             member.setRole(Role.GENERAL_MEMBER);
@@ -79,6 +79,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(member.toDto(), accessToken);
         }
 
-        return new CustomOAuth2User(existData.toDto() , accessToken);
+        return new CustomOAuth2User(existData.toDto(), accessToken);
     }
 }
