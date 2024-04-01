@@ -83,10 +83,9 @@ public class SecurityConfig {
                         authorizeHttpRequests.requestMatchers(new AntPathRequestMatcher("/**")).permitAll()
                                 // 경로별 인증 요구
                                 .requestMatchers(HttpMethod.POST, "/api/boards").hasAuthority("ROLE_GENERAL_MEMBER")
-                                .requestMatchers(HttpMethod.PUT, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
-                                .requestMatchers(HttpMethod.DELETE, "/api/boards/*").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.PUT, "/api/boards/**").hasAuthority("ROLE_GENERAL_MEMBER")
+                                .requestMatchers(HttpMethod.DELETE, "/api/boards/**").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .requestMatchers(HttpMethod.GET, "/api/members/validation").hasAuthority("ROLE_GENERAL_MEMBER")
-                                .requestMatchers(HttpMethod.POST, "/api/members/logout").hasAuthority("ROLE_GENERAL_MEMBER")
                                 .anyRequest().authenticated()
                 );
         // JWTFilter(토큰 유효성 검증)를 LoginCustomFilter 전에 실행

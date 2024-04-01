@@ -30,7 +30,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         String username = customOAuth2User.getUsername();
 
-        authenticationResponseService.createAuthenticationResponse(response,authentication,username, customOAuth2User.getAccessToken());
+        authenticationResponseService.createAuthenticationResponse(request, response, authentication, username, customOAuth2User.getAccessToken(), null);
         response.sendRedirect("http://localhost:8080/member/login/validation");
     }
 

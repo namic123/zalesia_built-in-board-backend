@@ -59,9 +59,10 @@ public class JWTUtil {
     }
 
     // JWT 토큰 생성
-    public String createJwt(String username, String role, Long expiredMillisecond) {
+    public String createJwt(String category, String username, String role, Long expiredMillisecond) {
         // Claims: Token payload에 들어가는 데이터
         Claims claims = Jwts.claims();
+        claims.put("category", category);
         claims.put("username", username);
         claims.put("role", role);
 
@@ -76,7 +77,17 @@ public class JWTUtil {
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
+    // token 카테고리 가져오기
+    public String getCategory(String token) {
 
+        return Jwts
+                .parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody()
+                .get("category", String.class);
+    }
     // 헤더에서 토큰 정보 추출
     public Map<String, String> resolveToken(HttpServletRequest request) {
         Map<String, String> auth = new HashMap<>();
@@ -152,5 +163,14 @@ public class JWTUtil {
         cookie.setPath("/");
         response.addCookie(cookie);
     }
+    public Cookie createCookie(String key, String value) {
 
+        Cookie cookie = new Cookie(key, value);
+        cookie.setMaxAge(60*60*60);
+        //cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+
+        return cookie;
+    }
 }

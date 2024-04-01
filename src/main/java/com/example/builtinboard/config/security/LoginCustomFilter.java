@@ -2,10 +2,12 @@ package com.example.builtinboard.config.security;
 
 import com.example.builtinboard.service.auth.AuthenticationResponseService;
 import com.example.builtinboard.util.JWTUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,6 +15,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 // 로그인 검증을 위한 커스텀 필터
 // 이 필터에 의해 로그인 검증이되므로, 따로 Controller를 작성할 필요가 없음.
@@ -52,9 +56,10 @@ public class LoginCustomFilter extends UsernamePasswordAuthenticationFilter {
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authResult.getPrincipal();
 
         String username = customMemberDetails.getUsername();
+        String nickname = customMemberDetails.getNickname();
         System.out.println("username = " + username);
-        // 권한 정보 추출 후 JWT 발급을 위한 클래스
-        authenticationResponseService.createAuthenticationResponse(response, authResult, username, null);
+
+        authenticationResponseService.createAuthenticationResponse(request, response, authResult, username, null,nickname);
 
     }
 
